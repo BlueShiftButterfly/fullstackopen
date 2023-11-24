@@ -29,7 +29,7 @@ const Content = (props) => {
 const Total = (props) => {
   return (
     <div>
-      <p>Number of excercises {props.total_count}</p>
+      <p>Number of excercises {props.parts[0].exercises+props.parts[1].exercises+props.parts[2].exercises}</p>
     </div>
   )
 }
