@@ -1,6 +1,25 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import personservice from './personservice'
+import "./index.css"
+
+const Notification = (props) => {
+  if (props.message === null) {
+    return null
+  }
+  let msgType = "notification"
+  if (props.isErrorNotification === true){
+    msgType = "error"
+  }
+  console.log(props.isErrorNotification)
+  console.log(props.message)
+
+  return (
+    <div className={msgType}>
+      {props.message}
+    </div>
+  )
+}
 
 const Person = (props) => {
   return (
@@ -54,7 +73,9 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchInput, setSearchInput] = useState("")
-  const [showAll, setShowAll] = useState(true)  
+  const [showAll, setShowAll] = useState(true)
+  const [notificationText, setNotificationText] = useState(null)
+  const [isNotificationError, setisNotificationError] = useState(false)
 
   useEffect(() => {
     console.log('effect')
@@ -88,11 +109,27 @@ const App = () => {
             setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
           })
           .catch(error => {
-            alert(`${newPerson.name} does not exist!`)
+            //alert(`${newPerson.name} does not exist!`)
+            setisNotificationError(true)
+            setNotificationText(
+              `${newPerson.name}'s information does not exist! It may have already been deleted from the server`
+            )
+            setTimeout(() => {
+              setNotificationText(null)
+            }, 5000)
             setPersons(persons.filter(p => p.id !== id))
+            console.log(`${newPerson.name}'s information does not exist! It may have already been deleted from the server`)
             return
           })
+          setNotificationText(
+            `Changed ${newName}'s number to ${newNumber}`
+          )
+          setisNotificationError(false)
+          setTimeout(() => {
+            setNotificationText(null)
+          }, 5000)
           console.log(`Updated ${newName}`)
+          
         return
       }
       console.log(`Did not add ${newName} to phonebook`)
@@ -101,6 +138,13 @@ const App = () => {
     personservice.createPerson(newPerson)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
+        setNotificationText(
+          `Added ${newName}`
+        )
+        setisNotificationError(false)
+        setTimeout(() => {
+          setNotificationText(null)
+        }, 5000)
       })
     setNewName("")
     setNewNumber("")
@@ -108,14 +152,30 @@ const App = () => {
   
   const deletePerson = (id) => {
     console.log("button click", id)
-    if (window.confirm(`Delete ${persons.find(p => p.id === id).name}?`)){
+    const deletedPersonName = persons.find(p => p.id === id).name
+    if (window.confirm(`Delete ${deletedPersonName}?`)){
       personservice.deletePerson(id)
         .then(deletedPerson => {
           setPersons(persons.filter(person => person.id !== deletedPerson.id))
+          setNotificationText(
+            `Removed ${deletedPersonName}`
+          )
+          setisNotificationError(false)
+          setTimeout(() => {
+            setNotificationText(null)
+          }, 5000)
         })
         .catch(error => {
-          alert(`${persons.find(p => p.id === id).name} does not exist!`)
+          //alert(`${deletedPersonName} does not exist!`)
+          setisNotificationError(true)
+          setNotificationText(
+            `${deletedPersonName}'s information does not exist! It may have already been deleted from the server`
+          )
+          setTimeout(() => {
+            setNotificationText(null)
+          }, 5000)
           setPersons(persons.filter(p => p.id !== id))
+          console.log(`${deletedPersonName}'s information does not exist! It may have already been deleted from the server`)
           return
         })
       console.log(persons)
@@ -138,6 +198,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notificationText} isErrorNotification={isNotificationError}></Notification>
       <h2>Phonebook</h2>
       <Filter filterHandler={handleSearchInputChange}></Filter>
       <h2>Add a new contact</h2>
