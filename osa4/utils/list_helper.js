@@ -7,8 +7,8 @@ const totalLikes = (blogs) => {
         (accumulator, currentValue) => accumulator + currentValue.likes, 0
     )
 }
-  
-  module.exports = {
+
+module.exports = {
     dummy,
     totalLikes
 }
