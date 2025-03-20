@@ -18,6 +18,12 @@ test("correct number of blogs", async () => {
     
     assert.strictEqual(response.body.length, 2)
 })
+
+test("identification field is named id", async() => {
+    const response = await api.get("/api/blogs")
+    assert.notEqual(response.body[0].id, undefined)
+    assert.strictEqual(response.body[0]._id, undefined)
+})
   
 
 after(async () => {
