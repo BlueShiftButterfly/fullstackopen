@@ -79,8 +79,45 @@ test("blog without like count gets likes as zero", async () => {
 
     const response = await api.get("/api/blogs")
     const blog = response.body.filter(blog => blog.title === "Bestest Blog Ever Ever Seen")[0]
-    console.log(blog)
     assert.strictEqual(blog.likes, 0)
+})
+
+test("bad request if blog has no title", async () => {
+    const newBlog = {
+        author: "Gary Garyson",
+        url: "testurl",
+        likes: 2
+    }
+
+    await api
+        .post("/api/blogs")
+        .send(newBlog)
+        .expect(400)
+})
+
+test("bad request if blog has no url", async () => {
+    const newBlog = {
+        title: "Bestest Blog Ever Ever Seen",
+        author: "Gary Garyson",
+        likes: 2
+    }
+
+    await api
+        .post("/api/blogs")
+        .send(newBlog)
+        .expect(400)
+})
+
+test("bad request if blog has no title and url", async () => {
+    const newBlog = {
+        author: "Gary Garyson",
+        likes: 2
+    }
+
+    await api
+        .post("/api/blogs")
+        .send(newBlog)
+        .expect(400)
 })
   
 
