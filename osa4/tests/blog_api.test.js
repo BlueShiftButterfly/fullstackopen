@@ -119,7 +119,25 @@ test("bad request if blog has no title and url", async () => {
         .send(newBlog)
         .expect(400)
 })
-  
+
+test("deleting blog returns 204 and works", async () => {
+    const response = await api.get("/api/blogs")
+    const blogId = response.body[0].id
+    await api
+        .delete(`/api/blogs/${blogId}`)
+        .expect(204)
+    const response2 = await api.get("/api/blogs")
+    assert.strictEqual(response2.body.length, 1)
+})
+
+test("deleting nonexistent blog returns 400 and doesn't change blog count", async () => {
+    const blogId = "943820"
+    await api
+        .delete(`/api/blogs/${blogId}`)
+        .expect(400)
+    const response2 = await api.get("/api/blogs")
+    assert.strictEqual(response2.body.length, 2)
+})
 
 after(async () => {
     await mongoose.connection.close()
