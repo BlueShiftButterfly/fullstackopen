@@ -63,6 +63,25 @@ test("blog can be added", async () => {
     assert(urls.includes("testurl"))
     assert(likes.includes(20))
 })
+
+test("blog without like count gets likes as zero", async () => {
+    const newBlog = {
+        title: "Bestest Blog Ever Ever Seen",
+        author: "Gary Garyson",
+        url: "testurl"
+    }
+
+    await api
+        .post("/api/blogs")
+        .send(newBlog)
+        .expect(201)
+        .expect("Content-Type", /application\/json/)
+
+    const response = await api.get("/api/blogs")
+    const blog = response.body.filter(blog => blog.title === "Bestest Blog Ever Ever Seen")[0]
+    console.log(blog)
+    assert.strictEqual(blog.likes, 0)
+})
   
 
 after(async () => {
