@@ -139,6 +139,39 @@ test("deleting nonexistent blog returns 400 and doesn't change blog count", asyn
     assert.strictEqual(response2.body.length, 2)
 })
 
+test("modifying likes on existing blog modifies correctly", async () => {
+    const blogs = await api.get("/api/blogs")
+    const blog = blogs.body[0]
+    blog.likes += 1
+    await api
+        .put(`/api/blogs/${blog.id}`)
+        .send({
+            title: blog.title,
+            author: blog.author,
+            url: blog.url,
+            likes: blog.likes
+        })
+        .expect(200)
+    const blogs2 = await api.get("/api/blogs")
+    assert.strictEqual(blogs2.body[0].likes, blog.likes)
+})
+test("modifying title on existing blog modifies correctly", async () => {
+    const blogs = await api.get("/api/blogs")
+    const blog = blogs.body[0]
+    const newTitle = "New Blog Title"
+    await api
+        .put(`/api/blogs/${blog.id}`)
+        .send({
+            title: newTitle,
+            author: blog.author,
+            url: blog.url,
+            likes: blog.likes
+        })
+        .expect(200)
+    const blogs2 = await api.get("/api/blogs")
+    assert.strictEqual(blogs2.body[0].title, newTitle)
+})
+
 after(async () => {
     await mongoose.connection.close()
 })
