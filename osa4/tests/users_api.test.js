@@ -62,6 +62,84 @@ describe("when there is initially one user at db", () => {
     
         assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
+    test("creation fails with if no username provided", async () => {
+        const usersAtStart = await helper.usersInDb()
+    
+        const newUser = {
+            name: "New User",
+            password: "password",
+        }
+    
+        const result = await api
+            .post("/api/users")
+            .send(newUser)
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+    
+        const usersAtEnd = await helper.usersInDb()
+        assert(result.body.error.includes("missing username"))
+    
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
+    test("creation fails with if username is too short", async () => {
+        const usersAtStart = await helper.usersInDb()
+    
+        const newUser = {
+            username: "aa",
+            name: "New User",
+            password: "password",
+        }
+    
+        const result = await api
+            .post("/api/users")
+            .send(newUser)
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+    
+        const usersAtEnd = await helper.usersInDb()
+        assert(result.body.error.includes("username too short"))
+    
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
+    test("creation fails with if no password is provided", async () => {
+        const usersAtStart = await helper.usersInDb()
+    
+        const newUser = {
+            username: "newuser",
+            name: "New User",
+        }
+    
+        const result = await api
+            .post("/api/users")
+            .send(newUser)
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+    
+        const usersAtEnd = await helper.usersInDb()
+        assert(result.body.error.includes("missing password"))
+    
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
+    test("creation fails with if password is too short", async () => {
+        const usersAtStart = await helper.usersInDb()
+    
+        const newUser = {
+            username: "newuser",
+            name: "New User",
+            password: "aa"
+        }
+    
+        const result = await api
+            .post("/api/users")
+            .send(newUser)
+            .expect(400)
+            .expect("Content-Type", /application\/json/)
+    
+        const usersAtEnd = await helper.usersInDb()
+        assert(result.body.error.includes("password too short"))
+    
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
     after(async () => {
         await mongoose.connection.close()
     })
