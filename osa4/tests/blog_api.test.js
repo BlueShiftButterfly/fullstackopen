@@ -182,6 +182,7 @@ describe("test blogs with two blogs and one user in db", () => {
     })
 
     after(async () => {
+        await User.deleteMany({})
         await mongoose.connection.close()
     })
 
