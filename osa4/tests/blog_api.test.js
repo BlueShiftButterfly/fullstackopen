@@ -21,9 +21,11 @@ describe("test blogs with two blogs and one user in db", () => {
         await user.save()
 
         let blogObject = new Blog(helper.initialBlogs[0])
+        blogObject.user = user.id
         await blogObject.save()
 
         blogObject = new Blog(helper.initialBlogs[1])
+        blogObject.user = user.id
         await blogObject.save()
     })
 
@@ -53,9 +55,9 @@ describe("test blogs with two blogs and one user in db", () => {
             url: "testurl",
             likes: 20
         }
-
         await api
             .post("/api/blogs")
+            .set("Authorization", `Bearer ${await helper.getLoginToken()}`)
             .send(newBlog)
             .expect(201)
             .expect("Content-Type", /application\/json/)
@@ -82,6 +84,7 @@ describe("test blogs with two blogs and one user in db", () => {
 
         await api
             .post("/api/blogs")
+            .set("Authorization", `Bearer ${await helper.getLoginToken()}`)
             .send(newBlog)
             .expect(201)
             .expect("Content-Type", /application\/json/)
@@ -100,6 +103,7 @@ describe("test blogs with two blogs and one user in db", () => {
 
         await api
             .post("/api/blogs")
+            .set("Authorization", `Bearer ${await helper.getLoginToken()}`)
             .send(newBlog)
             .expect(400)
     })
@@ -113,6 +117,7 @@ describe("test blogs with two blogs and one user in db", () => {
 
         await api
             .post("/api/blogs")
+            .set("Authorization", `Bearer ${await helper.getLoginToken()}`)
             .send(newBlog)
             .expect(400)
     })
@@ -125,6 +130,7 @@ describe("test blogs with two blogs and one user in db", () => {
 
         await api
             .post("/api/blogs")
+            .set("Authorization", `Bearer ${await helper.getLoginToken()}`)
             .send(newBlog)
             .expect(400)
     })
@@ -134,6 +140,7 @@ describe("test blogs with two blogs and one user in db", () => {
         const blogId = response.body[0].id
         await api
             .delete(`/api/blogs/${blogId}`)
+            .set("Authorization", `Bearer ${await helper.getLoginToken()}`)
             .expect(204)
         const response2 = await api.get("/api/blogs")
         assert.strictEqual(response2.body.length, 1)
@@ -143,6 +150,7 @@ describe("test blogs with two blogs and one user in db", () => {
         const blogId = "943820"
         await api
             .delete(`/api/blogs/${blogId}`)
+            .set("Authorization", `Bearer ${await helper.getLoginToken()}`)
             .expect(400)
         const response2 = await api.get("/api/blogs")
         assert.strictEqual(response2.body.length, 2)
@@ -179,6 +187,20 @@ describe("test blogs with two blogs and one user in db", () => {
             .expect(200)
         const blogs2 = await api.get("/api/blogs")
         assert.strictEqual(blogs2.body[0].title, newTitle)
+    })
+
+    test("401 unauthorized if blog post request has no valid token", async () => {
+        const newBlog = {
+            title: "Best Blog Ever",
+            author: "Gary Garyson",
+            url: "testurl",
+            likes: 20
+        }
+
+        await api
+            .post("/api/blogs")
+            .send(newBlog)
+            .expect(401)
     })
 
     after(async () => {

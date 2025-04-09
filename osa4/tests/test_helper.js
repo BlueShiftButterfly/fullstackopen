@@ -1,5 +1,8 @@
 const Blog = require("../models/blog")
 const User = require("../models/user")
+const supertest = require("supertest")
+const app = require("../app")
+const api = supertest(app)
 
 const initialBlogs = [
     {
@@ -31,9 +34,17 @@ const nonExistingId = async () => {
 
 const blogsInDb = async () => {
     const blogs = await Blog.find({})
-     return blogs.map(blog => blog.toJSON())
+    return blogs.map(blog => blog.toJSON())
+}
+
+const getLoginToken = async () => {
+    const loginResponse = await api
+        .post("/api/login")
+        .send({ username: "root", password: "sekret" })
+    const loginToken = loginResponse.body.token.toString()
+    return loginToken 
 }
 
 module.exports = {
-    initialBlogs, nonExistingId, blogsInDb, usersInDb
+    initialBlogs, nonExistingId, blogsInDb, usersInDb, getLoginToken
 }

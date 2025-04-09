@@ -21,10 +21,9 @@
         "mongoose": "^8.5.1"
     },
     "devDependencies": {
-        "@eslint/js": "^9.23.0",
-        "@stylistic/eslint-plugin": "^2.3.0",
+        "@stylistic/eslint-plugin": "^1.6.1",
         "cross-env": "^7.0.3",
-        "eslint": "^9.23.0",
+        "eslint": "^8.56.0",
         "nodemon": "^3.1.4",
         "supertest": "^7.0.0"
     }
