@@ -42,7 +42,7 @@ const getLoginToken = async () => {
         .post("/api/login")
         .send({ username: "root", password: "sekret" })
     const loginToken = loginResponse.body.token.toString()
-    return loginToken 
+    return loginToken
 }
 
 module.exports = {

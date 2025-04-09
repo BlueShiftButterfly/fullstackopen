@@ -9,7 +9,7 @@ const totalLikes = (blogs) => {
 }
 
 const favouriteBlog = (blogs) => {
-    if (blogs.length === 0) return null;
+    if (blogs.length === 0) return null
     return blogs
         .map(
             (x) => x
@@ -18,12 +18,11 @@ const favouriteBlog = (blogs) => {
             (a, b) =>  {
                 return b.likes - a.likes
             }
-        )
-        [0]
+        )[0]
 }
 
 const mostBlogs = (blogs) => {
-    if (blogs.length === 0) return null;
+    if (blogs.length === 0) return null
     var authors = new Map()
     blogs.forEach(blog => {
         if (authors.has(blog.author) === false) {
@@ -33,17 +32,16 @@ const mostBlogs = (blogs) => {
             authors.set(blog.author, authors.get(blog.author) + 1)
         }
     })
-    var popularAuthor = Array.from(authors.entries()).sort
-    (
+    var popularAuthor = Array.from(authors.entries()).sort(
         (a, b) => {
             return b[1] - a[1]
         }
-    )[0]    
+    )[0]
     return { author: popularAuthor[0], blogs: popularAuthor[1] }
 }
 
 const mostLikes = (blogs) => {
-    if (blogs.length === 0) return null;
+    if (blogs.length === 0) return null
     var authors = new Map()
     blogs.forEach(blog => {
         if (authors.has(blog.author) === false) {
@@ -53,12 +51,11 @@ const mostLikes = (blogs) => {
             authors.set(blog.author, authors.get(blog.author) + blog.likes)
         }
     })
-    var popularAuthor = Array.from(authors.entries()).sort
-    (
+    var popularAuthor = Array.from(authors.entries()).sort(
         (a, b) => {
             return b[1] - a[1]
         }
-    )[0]    
+    )[0]
     return { author: popularAuthor[0], likes: popularAuthor[1] }
 }
 

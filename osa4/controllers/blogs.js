@@ -1,7 +1,5 @@
-const jwt = require("jsonwebtoken")
 const blogsRouter = require("express").Router()
 const Blog = require("../models/blog")
-const User = require("../models/user")
 const middleware = require("../utils/middleware")
 
 blogsRouter.get("", async (request, response) => {
@@ -13,7 +11,7 @@ blogsRouter.post("", middleware.userExtractor, async (request, response) => {
     const blog = new Blog(request.body)
     if (blog.title === undefined || blog.url === undefined) {
         return response.status(400).end()
-    } 
+    }
     if (blog.likes === undefined){
         blog.likes = 0
     }
@@ -53,7 +51,7 @@ blogsRouter.put("/:id", async (request, response) => {
         await blog.save()
         response.status(200).json(blog)
     }
-    
+
 })
 
 module.exports = blogsRouter

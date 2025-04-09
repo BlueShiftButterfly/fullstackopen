@@ -6,7 +6,7 @@ const minUsernameLength = 3
 const minPasswordLength = 3
 
 usersRouter.post("/", async (request, response) => {
-    const { username, name, password} = request.body
+    const { username, name, password } = request.body
     // username uniqueness checked in model
     if (!username) {
         response.status(400).json({ error: "error registering user: missing username" }).end()
@@ -35,7 +35,7 @@ usersRouter.post("/", async (request, response) => {
 })
 
 usersRouter.get("/", async (request, response) => {
-    const users = await User.find({}).populate("blogs", { url: 1, title: 1, author: 1, id: 1})
+    const users = await User.find({}).populate("blogs", { url: 1, title: 1, author: 1, id: 1 })
     response.json(users)
 })
 

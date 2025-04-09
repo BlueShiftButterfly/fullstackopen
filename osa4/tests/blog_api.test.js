@@ -15,7 +15,6 @@ describe("test blogs with two blogs and one user in db", () => {
     beforeEach(async () => {
         await Blog.deleteMany({})
         await User.deleteMany({})
-        
         const passwordHash = await bcrypt.hash("sekret", 10)
         const user = new User({ username: "root", passwordHash })
         await user.save()
@@ -38,7 +37,7 @@ describe("test blogs with two blogs and one user in db", () => {
 
     test("correct number of blogs", async () => {
         const response = await api.get("/api/blogs")
-        
+
         assert.strictEqual(response.body.length, 2)
     })
 
