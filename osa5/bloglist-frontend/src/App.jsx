@@ -82,6 +82,22 @@ const App = () => {
         }
     }
 
+    const updateBlog = async (blogObject) => {
+        try {
+            await blogService.modify(blogObject)
+            console.log(`Liked blog \"${blogObject.title}\". Now it has ${blogObject.likes} likes.`)
+            setBlogs(await blogService.getAll())
+        } catch (exception) {
+            console.log("Failed to like blog")
+            console.log(exception)
+            setErrorMessage("Failed to like blog")
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000)
+        }
+    }
+
+
     if (user === null) {
         return (
             <div>
@@ -114,8 +130,8 @@ const App = () => {
             </Togglable>
             
             <h2>Blogs</h2>
-            {blogs.map(blog =>
-                <Blog key={blog.id} blog={blog} />
+            {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+                <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
             )}
         </div>
     )
