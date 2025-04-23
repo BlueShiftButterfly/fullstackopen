@@ -97,6 +97,24 @@ const App = () => {
         }
     }
 
+    const removeBlog = async (blogObject) => {
+        try {
+            await blogService.remove(blogObject)
+            setNotificationMessage(`Removed ${blogObject.title} by ${blogObject.author}`)
+            setTimeout(() => {
+                setNotificationMessage(null)
+            }, 5000)
+            setBlogs(await blogService.getAll())
+            console.log(`Removed ${blogObject.title} by ${blogObject.author}`)
+        } catch (exception) {
+            console.log("Failed to remove blog")
+            console.log(exception)
+            setErrorMessage("Failed to remove blog")
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000)
+        }
+    }
 
     if (user === null) {
         return (
@@ -128,10 +146,9 @@ const App = () => {
             <Togglable buttonLabel="Create New Blog" ref={blogFormRef}>
                 <BlogForm createBlog={createBlog}></BlogForm>
             </Togglable>
-            
             <h2>Blogs</h2>
             {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-                <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+                <Blog key={blog.id} blog={blog} updateBlog={updateBlog} removeBlog={removeBlog} canRemove={(blog.user.username === user.username)} />
             )}
         </div>
     )

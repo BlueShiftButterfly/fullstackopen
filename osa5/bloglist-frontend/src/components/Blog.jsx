@@ -1,7 +1,6 @@
 import { useState } from "react"
-import blogService from "../services/blogs"
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ blog, updateBlog, removeBlog, canRemove }) => {
     const [visible, setVisible] = useState(false)
     
     const hideWhenVisible = { display: visible ? "none" : "" }
@@ -33,6 +32,13 @@ const Blog = ({ blog, updateBlog }) => {
         await updateBlog(modifiedBlog)
     }
 
+    const askRemoveBlog = async (event) => {
+        event.preventDefault()
+        if (window.confirm(`Do you want to remove ${blog.title} by ${blog.author}?`)) {
+            await removeBlog(blog)
+        }
+    }
+
     return (
         <div style={blogStyle}>
             {blog.title} -- {blog.author}
@@ -44,8 +50,10 @@ const Blog = ({ blog, updateBlog }) => {
                 <p>Link: {blog.url}</p>
                 <p>Likes: {blog.likes} <button onClick={likeBlog}>Like</button></p>
                 <p>By: {blog.user.name}</p>
+                <button style={{ display: canRemove ? "" : "none" }} onClick={askRemoveBlog}>Remove</button>
             </div>
         </div>
     )
 }
+
 export default Blog
