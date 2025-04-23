@@ -1,8 +1,11 @@
+import PropTypes from "prop-types"
 import { useState } from "react"
+
+
 
 const Blog = ({ blog, updateBlog, removeBlog, canRemove }) => {
     const [visible, setVisible] = useState(false)
-    
+
     const hideWhenVisible = { display: visible ? "none" : "" }
     const showWhenVisible = { display: visible ? "" : "none" }
 
@@ -54,6 +57,13 @@ const Blog = ({ blog, updateBlog, removeBlog, canRemove }) => {
             </div>
         </div>
     )
+}
+
+Blog.propTypes = {
+    blog : PropTypes.object.isRequired,
+    updateBlog : PropTypes.func.isRequired,
+    removeBlog : PropTypes.func.isRequired,
+    canRemove : PropTypes.bool.isRequired
 }
 
 export default Blog

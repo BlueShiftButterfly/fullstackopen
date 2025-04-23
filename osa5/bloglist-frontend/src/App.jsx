@@ -45,7 +45,7 @@ const App = () => {
             setUsername("")
             setPassword("")
             blogService.setToken(user.token)
-            
+
         } catch (exception) {
             setErrorMessage("Wrong credentials")
             setTimeout(() => {
@@ -85,7 +85,7 @@ const App = () => {
     const updateBlog = async (blogObject) => {
         try {
             await blogService.modify(blogObject)
-            console.log(`Liked blog \"${blogObject.title}\". Now it has ${blogObject.likes} likes.`)
+            console.log(`Liked blog "${blogObject.title}". Now it has ${blogObject.likes} likes.`)
             setBlogs(await blogService.getAll())
         } catch (exception) {
             console.log("Failed to like blog")
@@ -123,15 +123,15 @@ const App = () => {
                 <ErrorNotification message={errorMessage}></ErrorNotification>
                 <h2>Log in to application</h2>
                 <form onSubmit={handleLogin}>
-                <div>
-                    Username 
-                    <input type="text" value={username} name="Username" onChange={({ target }) => setUsername(target.value)}/>
-                </div>
-                <div>
-                    Password 
-                    <input type="password" value={password} name="Password" onChange={({ target }) => setPassword(target.value)}/>
-                </div>
-                <button type="submit">Login</button>
+                    <div>
+                    Username
+                        <input type="text" value={username} name="Username" onChange={({ target }) => setUsername(target.value)}/>
+                    </div>
+                    <div>
+                    Password
+                        <input type="password" value={password} name="Password" onChange={({ target }) => setPassword(target.value)}/>
+                    </div>
+                    <button type="submit">Login</button>
                 </form>
             </div>
         )
