@@ -125,11 +125,27 @@ const App = () => {
                 <form onSubmit={handleLogin}>
                     <div>
                     Username
-                        <input type="text" value={username} name="Username" onChange={({ target }) => setUsername(target.value)}/>
+                        <input
+                            data-testid="username"
+                            type="text"
+                            value={username}
+                            name="Username"
+                            onChange={
+                                ({ target }) => setUsername(target.value)
+                            }
+                        />
                     </div>
                     <div>
                     Password
-                        <input type="password" value={password} name="Password" onChange={({ target }) => setPassword(target.value)}/>
+                        <input
+                            data-testid="password"
+                            type="password"
+                            value={password}
+                            name="Password"
+                            onChange={
+                                ({ target }) => setPassword(target.value)
+                            }
+                        />
                     </div>
                     <button type="submit">Login</button>
                 </form>
@@ -148,7 +164,15 @@ const App = () => {
             </Togglable>
             <h2>Blogs</h2>
             {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-                <Blog key={blog.id} blog={blog} updateBlog={updateBlog} removeBlog={removeBlog} canRemove={(blog.user.username === user.username)} />
+                <Blog
+                    key={blog.id}
+                    blog={blog}
+                    updateBlog={updateBlog}
+                    removeBlog={removeBlog}
+                    canRemove={
+                        (blog.user.username === user.username)
+                    } 
+                />
             )}
         </div>
     )
