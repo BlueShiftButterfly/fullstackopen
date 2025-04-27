@@ -61,25 +61,33 @@ const App = () => {
         setUser(null)
     }
 
-    const createBlog = async (blogObject) => {
-        try {
-            const result = await blogService.create(blogObject)
-            blogFormRef.current.toggleVisibility()
-            setNotificationMessage(`Created new blog ${blogObject.title} by ${blogObject.author} added`)
-            setTimeout(() => {
-                setNotificationMessage(null)
-            }, 5000)
-            setBlogs(await blogService.getAll())
-            console.log(`Created new blog ${blogObject.title} by ${blogObject.author} added`)
-            console.log(`Request response: ${JSON.stringify(result)}`)
-        } catch (exception) {
-            console.log("Failed to create blog")
-            console.log(exception)
-            setErrorMessage("Failed to create blog")
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000)
-        }
+    const createBlog = (blogObject) => {
+        blogFormRef.current.toggleVisibility()
+        blogService
+            .create(blogObject)
+            .then(returnedBlog => {
+                blogService.getAll().then(blogs =>
+                    setBlogs( blogs )
+                )
+                setNotificationMessage(`Created new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+                setTimeout(() => {
+                    setNotificationMessage(null)
+                }, 5000)
+                console.log(`Created new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+                //console.log(`Request response: ${JSON.stringify(result)}`)
+            })
+            .catch(exception => {
+                console.log(
+                    "Failed to create blog",
+                    exception.name,
+                    exception.stack,
+                    exception.message
+                )
+                setErrorMessage("Failed to create blog")
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 5000)
+            })
     }
 
     const updateBlog = async (blogObject) => {
