@@ -71,5 +71,28 @@ describe("Blog app", () => {
             await page.getByRole("button", { name: "View" }).first().click()
             await expect(page.getByText("Remove")).not.toBeVisible()
         })
+        test("blogs are ordered according to their like count", async ({ page }) => {
+            await createBlog(page, "Rust Fundamentals", "Rust Rusterson", "www.example.com")
+            await createBlog(page, "Clean Code 2", "Robert C. Martin", "www.example.com")
+            await createBlog(page, "OOP Fundamentals", "O. O. Programmerson", "www.example.com")
+            await page.getByText("OOP Fundamentals -- O. O. Programmerson").waitFor()
+            await page.getByRole("button", { name: "View" }).last().click()
+            await page.getByRole("button", { name: "Like" }).click()
+            await page.getByText("Likes: 1").waitFor()
+            await page.getByRole("button", { name: "Like" }).click()
+            await page.getByText("Likes: 2").waitFor()
+            await page.getByRole("button", { name: "Hide" }).click()
+            await page.getByRole("button", { name: "View" }).last().click()
+            await page.getByRole("button", { name: "Like" }).click()
+            await page.getByText("Likes: 1").first().waitFor()
+            await page.getByRole("button", { name: "Hide" }).click()
+            // awful but it works
+            const expectedOrder = [
+                "OOP Fundamentals -- O. O. ProgrammersonViewHideLink: www.example.comLikes: 2 LikeBy: Matti LuukkainenRemove",
+                "Clean Code 2 -- Robert C. MartinViewHideLink: www.example.comLikes: 1 LikeBy: Matti LuukkainenRemove",
+                "Rust Fundamentals -- Rust RustersonViewHideLink: www.example.comLikes: 0 LikeBy: Matti LuukkainenRemove",
+            ]
+            await expect(page.locator(".blog")).toHaveText(expectedOrder)
+        })
     })
 })
