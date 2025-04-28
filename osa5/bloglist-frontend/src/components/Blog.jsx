@@ -22,7 +22,7 @@ const Blog = ({ blog, updateBlog, removeBlog, canRemove }) => {
         marginBottom: 5
     }
 
-    const likeBlog = async (event) => {
+    const likeBlog = (event) => {
         event.preventDefault()
         const modifiedBlog = {
             title: blog.title,
@@ -32,13 +32,13 @@ const Blog = ({ blog, updateBlog, removeBlog, canRemove }) => {
             id: blog.id,
             likes: blog.likes + 1
         }
-        await updateBlog(modifiedBlog)
+        updateBlog(modifiedBlog)
     }
 
-    const askRemoveBlog = async (event) => {
+    const askRemoveBlog = (event) => {
         event.preventDefault()
         if (window.confirm(`Do you want to remove ${blog.title} by ${blog.author}?`)) {
-            await removeBlog(blog)
+            removeBlog(blog)
         }
     }
 

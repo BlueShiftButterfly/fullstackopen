@@ -69,11 +69,11 @@ const App = () => {
                 blogService.getAll().then(blogs =>
                     setBlogs( blogs )
                 )
-                setNotificationMessage(`Created new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+                setNotificationMessage(`Created new blog ${returnedBlog.title} by ${returnedBlog.author}`)
                 setTimeout(() => {
                     setNotificationMessage(null)
                 }, 5000)
-                console.log(`Created new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+                console.log(`Created new blog ${returnedBlog.title} by ${returnedBlog.author}`)
                 //console.log(`Request response: ${JSON.stringify(result)}`)
             })
             .catch(exception => {
@@ -90,38 +90,46 @@ const App = () => {
             })
     }
 
-    const updateBlog = async (blogObject) => {
-        try {
-            await blogService.modify(blogObject)
-            console.log(`Liked blog "${blogObject.title}". Now it has ${blogObject.likes} likes.`)
-            setBlogs(await blogService.getAll())
-        } catch (exception) {
-            console.log("Failed to like blog")
-            console.log(exception)
-            setErrorMessage("Failed to like blog")
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000)
-        }
+    const updateBlog = (blogObject) => {
+        blogService
+            .modify(blogObject)
+            .then(returnedBlog => {
+                blogService.getAll().then(blogs =>
+                    setBlogs( blogs )
+                )
+                console.log(`Liked blog "${blogObject.title}". Now it has ${blogObject.likes} likes.`)
+            })
+            .catch(exception => {
+                console.log("Failed to like blog")
+                console.log(exception)
+                setErrorMessage("Failed to like blog")
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 5000)
+            })
     }
 
-    const removeBlog = async (blogObject) => {
-        try {
-            await blogService.remove(blogObject)
-            setNotificationMessage(`Removed ${blogObject.title} by ${blogObject.author}`)
-            setTimeout(() => {
-                setNotificationMessage(null)
-            }, 5000)
-            setBlogs(await blogService.getAll())
-            console.log(`Removed ${blogObject.title} by ${blogObject.author}`)
-        } catch (exception) {
-            console.log("Failed to remove blog")
-            console.log(exception)
-            setErrorMessage("Failed to remove blog")
-            setTimeout(() => {
-                setErrorMessage(null)
-            }, 5000)
-        }
+    const removeBlog = (blogObject) => {
+        blogService
+            .remove(blogObject)
+            .then(returnedBlog => {
+                blogService.getAll().then(blogs =>
+                    setBlogs( blogs )
+                )
+                setNotificationMessage(`Removed ${blogObject.title} by ${blogObject.author}`)
+                setTimeout(() => {
+                    setNotificationMessage(null)
+                }, 5000)
+                console.log(`Removed ${blogObject.title} by ${blogObject.author}`)
+            })
+            .catch(exception => {
+                console.log("Failed to remove blog")
+                console.log(exception)
+                setErrorMessage("Failed to remove blog")
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 5000)
+            })
     }
 
     if (user === null) {

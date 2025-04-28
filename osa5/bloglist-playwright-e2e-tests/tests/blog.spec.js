@@ -49,11 +49,27 @@ describe("Blog app", () => {
             await expect(page.getByText("Clean Code 2 -- Robert C. Martin")).toBeVisible()
         })
         test("a blog can be liked", async ({ page }) => {
-            await page.getByText("Blogs").waitFor()
             await createBlog(page, "Rust Fundamentals", "Rust Rusterson", "www.example.com")
             await page.getByRole("button", { name: "View" }).first().click()
             await page.getByRole("button", { name: "Like" }).click()
             await expect(page.getByText("Likes: 1")).toBeVisible()
+        })
+        test("a blog can be removed by creator", async ({ page }) => {
+            await createBlog(page, "TITLEREMOVED", "AUTHOR", "www.example.com")
+            await page.getByText("Created new blog TITLEREMOVED by AUTHOR").waitFor()
+            await page.getByRole("button", { name: "View" }).first().click()
+            page.on("dialog", dialog => dialog.accept());
+            await page.getByRole("button", { name: "Remove" }).click()
+            await expect(page.getByText("Removed TITLEREMOVED by AUTHOR")).toBeVisible()
+        })
+        test("blog remove button is only seen by creator", async ({ page }) => {
+            await createBlog(page, "Rust Fundamentals", "Rust Rusterson", "www.example.com")
+            await logout(page)
+            await page.getByText("Log in to application").waitFor()
+            await loginWith(page, "no1haskellfan", "password")
+            await page.getByText("No.1 Haskell Fan logged in").waitFor()
+            await page.getByRole("button", { name: "View" }).first().click()
+            await expect(page.getByText("Remove")).not.toBeVisible()
         })
     })
 })
