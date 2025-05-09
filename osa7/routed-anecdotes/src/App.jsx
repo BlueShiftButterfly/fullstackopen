@@ -3,7 +3,8 @@ import {
     BrowserRouter as Router,
     Routes, Route, Link,
     useParams,
-    useMatch
+    useMatch,
+    useNavigate
 } from "react-router-dom"
 
 const Menu = () => {
@@ -16,6 +17,14 @@ const Menu = () => {
             <Link style={padding} to={"/create"}>create new</Link>
             <Link style={padding} to={"/about"}>about</Link>
         </div>
+    )
+}
+
+const Notification = ({notification}) => {
+    if (notification === null)
+        return null
+    return (
+        <div>{notification}</div>
     )
 }
 
@@ -123,10 +132,16 @@ const App = () => {
     ])
 
     const [notification, setNotification] = useState("")
+    const navigate = useNavigate()
 
     const addNew = (anecdote) => {
         anecdote.id = Math.round(Math.random() * 10000)
         setAnecdotes(anecdotes.concat(anecdote))
+        navigate("/")
+        setNotification(`a new anecdote ${anecdote.content} created!`)
+        setTimeout(() => {
+            setNotification(null)
+        }, 5000);
     }
 
     const anecdoteById = (id) =>
@@ -150,6 +165,7 @@ const App = () => {
         <div>
             <h1>Software anecdotes</h1>
             <Menu />
+            <Notification notification={notification}></Notification>
             <Routes>
                 <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />}></Route>
                 <Route path="/anecdotes/:id" element={ <Anecdote anecdote={anecdote}/> }></Route>
