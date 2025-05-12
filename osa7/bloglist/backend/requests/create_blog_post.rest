@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Impqb2huc29uMTIzIiwiaWQiOiI2N2VkNjQyZjJmYWE0YTFlMmViMTU4Y2IiLCJpYXQiOjE3NDQwMzM3NTQsImV4cCI6MTc0NDAzNzM1NH0.Pp4NTG4VBBJ8eDx9mHkBtf-mb0qD5w_QIU_RGC_Np0o
+
+{
+    "title": "New Blog Title",
+    "author": "John Johnson",
+    "url": "https://www.example.com",
+    "likes": 0
+}
