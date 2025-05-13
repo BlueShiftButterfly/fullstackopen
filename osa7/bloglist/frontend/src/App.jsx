@@ -7,6 +7,8 @@ import loginService from "./services/login";
 import "./index.css";
 import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
+import { useDispatch } from "react-redux";
+import { notifyError, notifyMessage } from "./reducers/notificationReducer";
 
 const App = () => {
     const [blogs, setBlogs] = useState([]);
@@ -16,6 +18,8 @@ const App = () => {
     const [errorMessage, setErrorMessage] = useState(null);
     const [notificationMessage, setNotificationMessage] = useState(null);
     const blogFormRef = useRef();
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -46,10 +50,7 @@ const App = () => {
             setPassword("");
             blogService.setToken(user.token);
         } catch (exception) {
-            setErrorMessage("Wrong credentials");
-            setTimeout(() => {
-                setErrorMessage(null);
-            }, 5000);
+            dispatch(notifyError("Wrong credentials"));
         }
     };
 
@@ -66,16 +67,14 @@ const App = () => {
             .create(blogObject)
             .then((returnedBlog) => {
                 blogService.getAll().then((blogs) => setBlogs(blogs));
-                setNotificationMessage(
-                    `Created new blog ${returnedBlog.title} by ${returnedBlog.author}`,
+                dispatch(
+                    notifyMessage(
+                        `Created new blog ${returnedBlog.title} by ${returnedBlog.author}`,
+                    ),
                 );
-                setTimeout(() => {
-                    setNotificationMessage(null);
-                }, 5000);
                 console.log(
                     `Created new blog ${returnedBlog.title} by ${returnedBlog.author}`,
                 );
-                //console.log(`Request response: ${JSON.stringify(result)}`)
             })
             .catch((exception) => {
                 console.log(
@@ -84,10 +83,7 @@ const App = () => {
                     exception.stack,
                     exception.message,
                 );
-                setErrorMessage("Failed to create blog");
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
+                dispatch(notifyError("Failed to create blog"));
             });
     };
 
@@ -103,10 +99,7 @@ const App = () => {
             .catch((exception) => {
                 console.log("Failed to like blog");
                 console.log(exception);
-                setErrorMessage("Failed to like blog");
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
+                dispatch(notifyError("Failed to like blog"));
             });
     };
 
@@ -115,12 +108,11 @@ const App = () => {
             .remove(blogObject)
             .then((returnedBlog) => {
                 blogService.getAll().then((blogs) => setBlogs(blogs));
-                setNotificationMessage(
-                    `Removed ${blogObject.title} by ${blogObject.author}`,
+                dispatch(
+                    notifyMessage(
+                        `Removed ${blogObject.title} by ${blogObject.author}`,
+                    ),
                 );
-                setTimeout(() => {
-                    setNotificationMessage(null);
-                }, 5000);
                 console.log(
                     `Removed ${blogObject.title} by ${blogObject.author}`,
                 );
@@ -128,10 +120,7 @@ const App = () => {
             .catch((exception) => {
                 console.log("Failed to remove blog");
                 console.log(exception);
-                setErrorMessage("Failed to remove blog");
-                setTimeout(() => {
-                    setErrorMessage(null);
-                }, 5000);
+                dispatch(notifyError("Failed to remove blog"));
             });
     };
 
