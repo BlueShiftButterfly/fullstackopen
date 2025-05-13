@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
-import ErrorNotification from "./components/ErrorNotification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import "./index.css";
@@ -127,8 +126,7 @@ const App = () => {
     if (user === null) {
         return (
             <div>
-                <Notification message={notificationMessage}></Notification>
-                <ErrorNotification message={errorMessage}></ErrorNotification>
+                <Notification></Notification>
                 <h2>Log in to application</h2>
                 <form onSubmit={handleLogin}>
                     <div>
@@ -159,8 +157,7 @@ const App = () => {
 
     return (
         <div>
-            <Notification message={notificationMessage}></Notification>
-            <ErrorNotification message={errorMessage}></ErrorNotification>
+            <Notification></Notification>
             <p>{user.name} logged in</p>
             <button onClick={handleLogout}>Logout</button>
             <Togglable buttonLabel="Create New Blog" ref={blogFormRef}>
