@@ -14,8 +14,6 @@ const App = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [user, setUser] = useState(null);
-    const [errorMessage, setErrorMessage] = useState(null);
-    const [notificationMessage, setNotificationMessage] = useState(null);
     const blogFormRef = useRef();
 
     const dispatch = useDispatch();
