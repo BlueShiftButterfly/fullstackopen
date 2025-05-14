@@ -16,10 +16,11 @@ blogsRouter.post("", middleware.userExtractor, async (request, response) => {
     if (!blog.title || !blog.url) {
         return response
             .status(400)
-            .json({ error: "Blog is missing a title or URL" });
+            .json({ error: "Blog is missing a title or URL" })
+            .end();
     }
     if (!request.user) {
-        return response.status(400).json({ error: "User is missing" });
+        return response.status(400).json({ error: "User is missing" }).end();
     }
     if (!blog.likes) {
         blog.likes = 0;
@@ -28,7 +29,7 @@ blogsRouter.post("", middleware.userExtractor, async (request, response) => {
     const savedBlog = await blog.save();
     request.user.blogs = request.user.blogs.concat(savedBlog.id);
     await request.user.save();
-    response.status(201).json(blog);
+    return response.status(201).json(blog);
 });
 
 blogsRouter.delete(
