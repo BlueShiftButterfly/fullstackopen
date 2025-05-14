@@ -14,7 +14,12 @@ blogsRouter.get("", async (request, response) => {
 blogsRouter.post("", middleware.userExtractor, async (request, response) => {
     const blog = new Blog(request.body);
     if (!blog.title || !blog.url) {
-        return response.status(400).end();
+        return response
+            .status(400)
+            .json({ error: "Blog is missing a title or URL" });
+    }
+    if (!request.user) {
+        return response.status(400).json({ error: "User is missing" });
     }
     if (!blog.likes) {
         blog.likes = 0;
