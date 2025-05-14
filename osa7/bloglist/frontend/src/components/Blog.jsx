@@ -1,11 +1,17 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { likeBlog, removeBlog } from "../reducers/blogReducer";
+import loginstorage from "../services/loginstorage";
 
-const Blog = ({ blog, updateBlog, removeBlog, canRemove }) => {
+const Blog = ({ blog }) => {
     const [visible, setVisible] = useState(false);
 
     const hideWhenVisible = { display: visible ? "none" : "" };
     const showWhenVisible = { display: visible ? "" : "none" };
+
+    const dispatch = useDispatch();
+    const canRemove = loginstorage.me() === blog.user.username;
 
     const toggleVisibility = () => {
         setVisible(!visible);
@@ -20,27 +26,19 @@ const Blog = ({ blog, updateBlog, removeBlog, canRemove }) => {
         marginBottom: 5,
     };
 
-    const likeBlog = (event) => {
+    const handleLike = (event) => {
         event.preventDefault();
-        const modifiedBlog = {
-            title: blog.title,
-            author: blog.author,
-            url: blog.url,
-            user: blog.user,
-            id: blog.id,
-            likes: blog.likes + 1,
-        };
-        updateBlog(modifiedBlog);
+        dispatch(likeBlog(blog));
     };
 
-    const askRemoveBlog = (event) => {
+    const handleRemove = (event) => {
         event.preventDefault();
         if (
             window.confirm(
                 `Do you want to remove ${blog.title} by ${blog.author}?`,
             )
         ) {
-            removeBlog(blog);
+            dispatch(removeBlog(blog));
         }
     };
 
@@ -54,12 +52,13 @@ const Blog = ({ blog, updateBlog, removeBlog, canRemove }) => {
                 <button onClick={toggleVisibility}>Hide</button>
                 <p>Link: {blog.url}</p>
                 <p>
-                    Likes: {blog.likes} <button onClick={likeBlog}>Like</button>
+                    Likes: {blog.likes}{" "}
+                    <button onClick={handleLike}>Like</button>
                 </p>
                 <p>By: {blog.user.name}</p>
                 <button
                     style={{ display: canRemove ? "" : "none" }}
-                    onClick={askRemoveBlog}
+                    onClick={handleRemove}
                 >
                     Remove
                 </button>
@@ -70,9 +69,6 @@ const Blog = ({ blog, updateBlog, removeBlog, canRemove }) => {
 
 Blog.propTypes = {
     blog: PropTypes.object.isRequired,
-    updateBlog: PropTypes.func.isRequired,
-    removeBlog: PropTypes.func.isRequired,
-    canRemove: PropTypes.bool.isRequired,
 };
 
 export default Blog;

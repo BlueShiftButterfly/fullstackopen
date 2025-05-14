@@ -6,11 +6,12 @@ import loginService from "./services/login";
 import "./index.css";
 import Togglable from "./components/Togglable";
 import BlogForm from "./components/BlogForm";
-import { useDispatch } from "react-redux";
-import { notifyError, notifyMessage } from "./reducers/notificationReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { notifyError } from "./reducers/notificationReducer";
+import { createBlog, initializeBlogs } from "./reducers/blogReducer";
+import loginstorage from "./services/loginstorage";
 
 const App = () => {
-    const [blogs, setBlogs] = useState([]);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [user, setUser] = useState(null);
@@ -19,13 +20,13 @@ const App = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        blogService.getAll().then((blogs) => setBlogs(blogs));
+        dispatch(initializeBlogs());
     }, []);
 
+    const blogs = useSelector((state) => state.blogs);
     useEffect(() => {
-        const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
-        if (loggedUserJSON) {
-            const user = JSON.parse(loggedUserJSON);
+        const user = loginstorage.loadUser();
+        if (user) {
             setUser(user);
             blogService.setToken(user.token);
         }
@@ -38,10 +39,7 @@ const App = () => {
                 username,
                 password,
             });
-            window.localStorage.setItem(
-                "loggedBlogappUser",
-                JSON.stringify(user),
-            );
+            loginstorage.saveUser(user);
             setUser(user);
             setUsername("");
             setPassword("");
@@ -54,72 +52,11 @@ const App = () => {
     const handleLogout = async (event) => {
         event.preventDefault();
         blogService.setToken(null);
-        window.localStorage.removeItem("loggedBlogappUser");
+        loginstorage.removeUser();
         setUser(null);
     };
 
-    const createBlog = (blogObject) => {
-        blogFormRef.current.toggleVisibility();
-        blogService
-            .create(blogObject)
-            .then((returnedBlog) => {
-                blogService.getAll().then((blogs) => setBlogs(blogs));
-                dispatch(
-                    notifyMessage(
-                        `Created new blog ${returnedBlog.title} by ${returnedBlog.author}`,
-                    ),
-                );
-                console.log(
-                    `Created new blog ${returnedBlog.title} by ${returnedBlog.author}`,
-                );
-            })
-            .catch((exception) => {
-                console.log(
-                    "Failed to create blog",
-                    exception.name,
-                    exception.stack,
-                    exception.message,
-                );
-                dispatch(notifyError("Failed to create blog"));
-            });
-    };
-
-    const updateBlog = (blogObject) => {
-        blogService
-            .modify(blogObject)
-            .then((returnedBlog) => {
-                blogService.getAll().then((blogs) => setBlogs(blogs));
-                console.log(
-                    `Liked blog "${blogObject.title}". Now it has ${blogObject.likes} likes.`,
-                );
-            })
-            .catch((exception) => {
-                console.log("Failed to like blog");
-                console.log(exception);
-                dispatch(notifyError("Failed to like blog"));
-            });
-    };
-
-    const removeBlog = (blogObject) => {
-        blogService
-            .remove(blogObject)
-            .then((returnedBlog) => {
-                blogService.getAll().then((blogs) => setBlogs(blogs));
-                dispatch(
-                    notifyMessage(
-                        `Removed ${blogObject.title} by ${blogObject.author}`,
-                    ),
-                );
-                console.log(
-                    `Removed ${blogObject.title} by ${blogObject.author}`,
-                );
-            })
-            .catch((exception) => {
-                console.log("Failed to remove blog");
-                console.log(exception);
-                dispatch(notifyError("Failed to remove blog"));
-            });
-    };
+    const handleCreateBlog = async (blogObject) => {};
 
     if (user === null) {
         return (
@@ -159,20 +96,12 @@ const App = () => {
             <p>{user.name} logged in</p>
             <button onClick={handleLogout}>Logout</button>
             <Togglable buttonLabel="Create New Blog" ref={blogFormRef}>
-                <BlogForm createBlog={createBlog}></BlogForm>
+                <BlogForm formRef={blogFormRef}></BlogForm>
             </Togglable>
             <h2>Blogs</h2>
-            {blogs
-                .sort((a, b) => b.likes - a.likes)
-                .map((blog) => (
-                    <Blog
-                        key={blog.id}
-                        blog={blog}
-                        updateBlog={updateBlog}
-                        removeBlog={removeBlog}
-                        canRemove={blog.user.username === user.username}
-                    />
-                ))}
+            {blogs.map((blog) => (
+                <Blog key={blog.id} blog={blog} />
+            ))}
         </div>
     );
 };
