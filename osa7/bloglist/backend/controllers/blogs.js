@@ -13,10 +13,10 @@ blogsRouter.get("", async (request, response) => {
 
 blogsRouter.post("", middleware.userExtractor, async (request, response) => {
     const blog = new Blog(request.body);
-    if (blog.title === undefined || blog.url === undefined) {
+    if (!blog.title || !blog.url) {
         return response.status(400).end();
     }
-    if (blog.likes === undefined) {
+    if (!blog.likes) {
         blog.likes = 0;
     }
     blog.user = request.user;
