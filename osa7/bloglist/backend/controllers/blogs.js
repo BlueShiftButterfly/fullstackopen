@@ -19,7 +19,7 @@ blogsRouter.post("", middleware.userExtractor, async (request, response) => {
     if (blog.likes === undefined) {
         blog.likes = 0;
     }
-    blog.user = request.user.id;
+    blog.user = request.user;
     const savedBlog = await blog.save();
     request.user.blogs = request.user.blogs.concat(savedBlog.id);
     await request.user.save();
