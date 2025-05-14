@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import blogService from "../services/blogs";
 import { notifyError, notifyMessage } from "./notificationReducer";
-import { logAndFormatError } from "../services/errorFomatter";
+import { logAndFormatError } from "../services/errorFormatter";
 
 const initialState = [];
 
