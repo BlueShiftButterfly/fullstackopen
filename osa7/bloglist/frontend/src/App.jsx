@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { initializeBlogs } from "./reducers/blogReducer";
 import LoginForm from "./components/LoginForm";
 import { initializeLocalUser } from "./reducers/localUserReducer";
-import LocalUser from "./components/LocalUser";
 import { initializeUsers } from "./reducers/userReducer";
 import UserList from "./components/UserList";
 import { Routes, Route, Navigate } from "react-router-dom";

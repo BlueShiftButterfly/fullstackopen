@@ -33,13 +33,24 @@ const Blog = ({ blog }) => {
         }
     };
 
+    const getProperUrL = (baseUrl) => {
+        // This is because react-router likes to read URLs
+        // without http:// as internal links >:(
+        if (!baseUrl) return "";
+        if (baseUrl.startsWith("http://") || baseUrl.startsWith("https://"))
+            return baseUrl;
+        return `https://${baseUrl}`;
+    };
+
     return (
         <div className="blog">
             <h2>
                 {blog.title} -- {blog.author}
             </h2>
             <div>
-                <a href={blog.url}>{blog.url}</a>
+                <a href={getProperUrL(blog.url)} target="_blank">
+                    {blog.url}
+                </a>
             </div>
             <p>
                 Likes: {blog.likes} <button onClick={handleLike}>Like</button>
