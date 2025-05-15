@@ -12,6 +12,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/Home";
 import UserView from "./components/UserView";
 import BlogView from "./components/BlogView";
+import NavigationBar from "./components/NavigationBar";
 
 const App = () => {
     const dispatch = useDispatch();
@@ -35,7 +36,7 @@ const App = () => {
 
     const getLoginNavigation = () => {
         if (userState.isInitialized === false) {
-            return <p>Loading...</p>;
+            return <p></p>;
         }
         if (!userState.user) {
             return <LoginForm></LoginForm>;
@@ -46,7 +47,7 @@ const App = () => {
     return (
         <div>
             <Notification></Notification>
-            <LocalUser></LocalUser>
+            <NavigationBar></NavigationBar>
             <Routes>
                 <Route path="/login" element={getLoginNavigation()}></Route>
                 <Route

@@ -18,10 +18,10 @@ const Home = () => {
     };
     return (
         <div>
+            <h2>Blogs</h2>
             <Togglable buttonLabel="Create New Blog" ref={blogFormRef}>
                 <BlogForm formRef={blogFormRef}></BlogForm>
             </Togglable>
-            <h2>Blogs</h2>
             {blogs.map((blog) => (
                 <div key={blog.id} style={blogStyle}>
                     <Link to={`/blogs/${blog.id}`}>
