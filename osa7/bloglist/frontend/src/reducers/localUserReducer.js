@@ -7,25 +7,25 @@ import loginService from "../services/login";
 
 const initialState = null;
 
-const userSlice = createSlice({
+const localUserSlice = createSlice({
     name: "user",
     initialState,
     reducers: {
-        setUser(state, action) {
+        setLocalUser(state, action) {
             return action.payload;
         },
-        clearUser(state, action) {
+        clearLocalUser(state, action) {
             return null;
         },
     },
 });
 
-export const initializeUser = () => {
+export const initializeLocalUser = () => {
     return async (dispatch) => {
         try {
             const user = loginstorage.loadUser();
             if (user) {
-                dispatch(userSlice.actions.setUser(user));
+                dispatch(localUserSlice.actions.setLocalUser(user));
                 blogService.setToken(user.token);
             }
         } catch (e) {
@@ -44,7 +44,7 @@ export const login = (username, password) => {
             console.log(user);
             loginstorage.saveUser(user);
             blogService.setToken(user.token);
-            dispatch(userSlice.actions.setUser(user));
+            dispatch(localUserSlice.actions.setLocalUser(user));
             dispatch(notifyMessage(`Logged in as ${user.username}`));
         } catch (e) {
             dispatch(notifyError(logAndFormatError("Wrong credentials", e)));
@@ -57,7 +57,7 @@ export const logout = () => {
         try {
             blogService.setToken(null);
             loginstorage.removeUser();
-            dispatch(userSlice.actions.clearUser());
+            dispatch(localUserSlice.actions.clearLocalUser());
             dispatch(notifyMessage("Logged out"));
         } catch (e) {
             dispatch(notifyError(logAndFormatError("Failed to logout", e)));
@@ -65,4 +65,4 @@ export const logout = () => {
     };
 };
 
-export default userSlice.reducer;
+export default localUserSlice.reducer;

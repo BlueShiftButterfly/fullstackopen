@@ -7,11 +7,12 @@ import BlogForm from "./components/BlogForm";
 import { useDispatch, useSelector } from "react-redux";
 import { initializeBlogs } from "./reducers/blogReducer";
 import LoginForm from "./components/LoginForm";
-import { initializeUser, logout } from "./reducers/userReducer";
+import { initializeLocalUser } from "./reducers/localUserReducer";
+import LocalUser from "./components/LocalUser";
 
 const App = () => {
     const blogs = useSelector((state) => state.blogs);
-    const user = useSelector((state) => state.user);
+    const user = useSelector((state) => state.localUser);
     const dispatch = useDispatch();
 
     const blogFormRef = useRef();
@@ -21,13 +22,8 @@ const App = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        dispatch(initializeUser());
+        dispatch(initializeLocalUser());
     }, [dispatch]);
-
-    const handleLogout = async (event) => {
-        event.preventDefault();
-        dispatch(logout());
-    };
 
     if (!user) {
         return (
@@ -41,8 +37,7 @@ const App = () => {
     return (
         <div>
             <Notification></Notification>
-            <p>{user.name} logged in</p>
-            <button onClick={handleLogout}>Logout</button>
+            <LocalUser></LocalUser>
             <Togglable buttonLabel="Create New Blog" ref={blogFormRef}>
                 <BlogForm formRef={blogFormRef}></BlogForm>
             </Togglable>
