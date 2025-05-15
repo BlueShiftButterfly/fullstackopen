@@ -36,8 +36,6 @@ export const initializeLocalUser = () => {
             } else {
                 dispatch(localUserSlice.actions.clearLocalUser());
             }
-
-            console.log(user);
         } catch (e) {
             logAndFormatError("Failed to fetch user credentials", e);
         }
@@ -51,7 +49,6 @@ export const login = (username, password) => {
                 username,
                 password,
             });
-            console.log(user);
             loginstorage.saveUser(user);
             blogService.setToken(user.token);
             dispatch(localUserSlice.actions.setLocalUser(user));

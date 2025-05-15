@@ -17,15 +17,6 @@ const Blog = ({ blog }) => {
         setVisible(!visible);
     };
 
-    const blogStyle = {
-        border: "solid",
-        borderWidth: 2,
-        borderRadius: 4,
-        paddingTop: 10,
-        paddingLeft: 4,
-        marginBottom: 5,
-    };
-
     const handleLike = (event) => {
         event.preventDefault();
         dispatch(likeBlog(blog));
@@ -43,26 +34,23 @@ const Blog = ({ blog }) => {
     };
 
     return (
-        <div style={blogStyle} className="blog">
-            {blog.title} -- {blog.author}
-            <div style={hideWhenVisible}>
-                <button onClick={toggleVisibility}>View</button>
+        <div className="blog">
+            <h2>
+                {blog.title} -- {blog.author}
+            </h2>
+            <div>
+                <a href={blog.url}>{blog.url}</a>
             </div>
-            <div style={showWhenVisible}>
-                <button onClick={toggleVisibility}>Hide</button>
-                <p>Link: {blog.url}</p>
-                <p>
-                    Likes: {blog.likes}{" "}
-                    <button onClick={handleLike}>Like</button>
-                </p>
-                <p>By: {blog.user.name}</p>
-                <button
-                    style={{ display: canRemove ? "" : "none" }}
-                    onClick={handleRemove}
-                >
-                    Remove
-                </button>
-            </div>
+            <p>
+                Likes: {blog.likes} <button onClick={handleLike}>Like</button>
+            </p>
+            <p>By: {blog.user.name}</p>
+            <button
+                style={{ display: canRemove ? "" : "none" }}
+                onClick={handleRemove}
+            >
+                Remove
+            </button>
         </div>
     );
 };

@@ -8,8 +8,10 @@ import { initializeLocalUser } from "./reducers/localUserReducer";
 import LocalUser from "./components/LocalUser";
 import { initializeUsers } from "./reducers/userReducer";
 import UserList from "./components/UserList";
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./components/Home";
+import UserView from "./components/UserView";
+import BlogView from "./components/BlogView";
 
 const App = () => {
     const dispatch = useDispatch();
@@ -41,13 +43,20 @@ const App = () => {
         return <Navigate replace to={"/"}></Navigate>;
     };
 
-    console.log(userState);
     return (
         <div>
             <Notification></Notification>
             <LocalUser></LocalUser>
             <Routes>
                 <Route path="/login" element={getLoginNavigation()}></Route>
+                <Route
+                    path="/blogs/:id"
+                    element={requireAuth(<BlogView></BlogView>)}
+                ></Route>
+                <Route
+                    path="/users/:id"
+                    element={requireAuth(<UserView></UserView>)}
+                ></Route>
                 <Route
                     path="/users"
                     element={requireAuth(<UserList></UserList>)}
