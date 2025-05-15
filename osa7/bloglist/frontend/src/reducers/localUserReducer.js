@@ -5,17 +5,23 @@ import { notifyError, notifyMessage } from "./notificationReducer";
 import loginstorage from "../services/loginstorage";
 import loginService from "../services/login";
 
-const initialState = null;
+const initialState = {
+    user: null,
+    isInitialized: false,
+};
 
 const localUserSlice = createSlice({
     name: "user",
     initialState,
     reducers: {
         setLocalUser(state, action) {
-            return action.payload;
+            return { user: action.payload, isInitialized: true };
         },
         clearLocalUser(state, action) {
-            return null;
+            return {
+                user: null,
+                isInitialized: true,
+            };
         },
     },
 });
@@ -27,7 +33,11 @@ export const initializeLocalUser = () => {
             if (user) {
                 dispatch(localUserSlice.actions.setLocalUser(user));
                 blogService.setToken(user.token);
+            } else {
+                dispatch(localUserSlice.actions.clearLocalUser());
             }
+
+            console.log(user);
         } catch (e) {
             logAndFormatError("Failed to fetch user credentials", e);
         }

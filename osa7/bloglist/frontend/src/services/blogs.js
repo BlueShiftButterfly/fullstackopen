@@ -30,9 +30,9 @@ const remove = async (id) => {
     return response.data;
 };
 
-const getAll = () => {
-    const request = axios.get(baseUrl);
-    return request.then((response) => response.data);
+const getAll = async () => {
+    const response = await axios.get(baseUrl);
+    return response.data;
 };
 
 export default { getAll, setToken, create, modify, remove };

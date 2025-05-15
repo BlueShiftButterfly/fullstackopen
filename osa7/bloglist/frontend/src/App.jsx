@@ -1,50 +1,59 @@
-import { useEffect, useRef } from "react";
-import Blog from "./components/Blog";
+import { useEffect } from "react";
 import Notification from "./components/Notification";
 import "./index.css";
-import Togglable from "./components/Togglable";
-import BlogForm from "./components/BlogForm";
 import { useDispatch, useSelector } from "react-redux";
 import { initializeBlogs } from "./reducers/blogReducer";
 import LoginForm from "./components/LoginForm";
 import { initializeLocalUser } from "./reducers/localUserReducer";
 import LocalUser from "./components/LocalUser";
+import { initializeUsers } from "./reducers/userReducer";
+import UserList from "./components/UserList";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
+import Home from "./components/Home";
 
 const App = () => {
-    const blogs = useSelector((state) => state.blogs);
-    const user = useSelector((state) => state.localUser);
     const dispatch = useDispatch();
-
-    const blogFormRef = useRef();
-
-    useEffect(() => {
-        dispatch(initializeBlogs());
-    }, [dispatch]);
+    const userState = useSelector((state) => state.localUser);
 
     useEffect(() => {
         dispatch(initializeLocalUser());
+        dispatch(initializeBlogs());
+        dispatch(initializeUsers());
     }, [dispatch]);
 
-    if (!user) {
-        return (
-            <div>
-                <Notification></Notification>
-                <LoginForm></LoginForm>
-            </div>
-        );
-    }
+    const requireAuth = (element) => {
+        if (userState.isInitialized === false) {
+            return <p></p>;
+        }
+        if (userState.user) {
+            return element;
+        }
+        return <Navigate replace to={"/login"}></Navigate>;
+    };
 
+    const getLoginNavigation = () => {
+        if (userState.isInitialized === false) {
+            return <p>Loading...</p>;
+        }
+        if (!userState.user) {
+            return <LoginForm></LoginForm>;
+        }
+        return <Navigate replace to={"/"}></Navigate>;
+    };
+
+    console.log(userState);
     return (
         <div>
             <Notification></Notification>
             <LocalUser></LocalUser>
-            <Togglable buttonLabel="Create New Blog" ref={blogFormRef}>
-                <BlogForm formRef={blogFormRef}></BlogForm>
-            </Togglable>
-            <h2>Blogs</h2>
-            {blogs.map((blog) => (
-                <Blog key={blog.id} blog={blog} />
-            ))}
+            <Routes>
+                <Route path="/login" element={getLoginNavigation()}></Route>
+                <Route
+                    path="/users"
+                    element={requireAuth(<UserList></UserList>)}
+                ></Route>
+                <Route path="/" element={requireAuth(<Home></Home>)}></Route>
+            </Routes>
         </div>
     );
 };
