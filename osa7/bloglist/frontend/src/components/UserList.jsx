@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 const UserList = () => {
     const users = useSelector((state) => state.users);
     const getLikeCount = (user) => {
+        if (user.blogs.length <= 0) return 0;
         return user.blogs.map((blog) => blog.likes).reduce((a, c) => a + c);
     };
     return (
