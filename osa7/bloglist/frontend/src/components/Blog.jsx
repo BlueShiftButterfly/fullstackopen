@@ -3,11 +3,13 @@ import { useDispatch } from "react-redux";
 import { commentBlog, likeBlog, removeBlog } from "../reducers/blogReducer";
 import loginstorage from "../services/loginstorage";
 import { useField } from "../hooks";
+import { useNavigate } from "react-router-dom";
 
 const Blog = ({ blog }) => {
     const dispatch = useDispatch();
     const canRemove = loginstorage.me() === blog.user.username;
     const commentContent = useField("text");
+    const navigate = useNavigate();
 
     const handleLike = (event) => {
         event.preventDefault();
@@ -28,6 +30,7 @@ const Blog = ({ blog }) => {
             )
         ) {
             dispatch(removeBlog(blog));
+            navigate("/");
         }
     };
 

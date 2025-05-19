@@ -110,11 +110,9 @@ export const commentBlog = (blog, comment) => {
     return async (dispatch) => {
         try {
             const newBlog = await blogService.comment(blog.id, comment);
-
-            console.log(blog);
             dispatch(blogSlice.actions.modifyBlog(newBlog));
             console.log(
-                `Commented on blog "${blog.title}". It now has ${blog.comments.length} comments.`,
+                `Commented on blog "${newBlog.title}". It now has ${newBlog.comments.length} comments.`,
             );
         } catch (e) {
             dispatch(
