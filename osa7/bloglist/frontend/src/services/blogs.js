@@ -30,9 +30,22 @@ const remove = async (id) => {
     return response.data;
 };
 
+const comment = async (id, comment) => {
+    const config = {
+        headers: { Authorization: token },
+    };
+    const newComment = { content: comment };
+    const response = await axios.put(
+        `${baseUrl}/${id}/comments`,
+        newComment,
+        config,
+    );
+    return response.data;
+};
+
 const getAll = async () => {
     const response = await axios.get(baseUrl);
     return response.data;
 };
 
-export default { getAll, setToken, create, modify, remove };
+export default { getAll, setToken, create, modify, remove, comment };

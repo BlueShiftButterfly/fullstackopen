@@ -1,25 +1,23 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { likeBlog, removeBlog } from "../reducers/blogReducer";
+import { commentBlog, likeBlog, removeBlog } from "../reducers/blogReducer";
 import loginstorage from "../services/loginstorage";
+import { useField } from "../hooks";
 
 const Blog = ({ blog }) => {
-    const [visible, setVisible] = useState(false);
-
-    const hideWhenVisible = { display: visible ? "none" : "" };
-    const showWhenVisible = { display: visible ? "" : "none" };
-
     const dispatch = useDispatch();
     const canRemove = loginstorage.me() === blog.user.username;
-
-    const toggleVisibility = () => {
-        setVisible(!visible);
-    };
+    const commentContent = useField("text");
 
     const handleLike = (event) => {
         event.preventDefault();
         dispatch(likeBlog(blog));
+    };
+
+    const handleComment = (event) => {
+        event.preventDefault();
+        dispatch(commentBlog(blog, commentContent.value));
+        commentContent.reset();
     };
 
     const handleRemove = (event) => {
@@ -63,6 +61,10 @@ const Blog = ({ blog }) => {
                 Remove
             </button>
             <h3>Comments</h3>
+            <form onSubmit={handleComment}>
+                <input {...commentContent} id="comment-input" reset="" />
+                <button type="submit">Add Comment</button>
+            </form>
             <ul>
                 {blog.comments.map((comment) => (
                     <li key={comment.id}>{comment.content}</li>

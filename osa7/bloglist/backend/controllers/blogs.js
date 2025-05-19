@@ -84,7 +84,7 @@ blogsRouter.put(
         if (blog === undefined || blog === null) {
             return response.status(404).json({ error: "blog not found" });
         }
-        if (!comment) {
+        if (!comment.content) {
             return response
                 .status(400)
                 .json({ error: "comment cannot be empty" });
@@ -94,7 +94,17 @@ blogsRouter.put(
         await newComment.save();
         blog.comments = blog.comments.concat(newComment.id);
         await blog.save();
-        return response.status(200).json(blog);
+        const returnedBlog = await Blog.findById(blog.id)
+            .populate("user", {
+                username: 1,
+                name: 1,
+                id: 1,
+            })
+            .populate("comments", {
+                content: 1,
+                id: 1,
+            });
+        return response.status(200).json(returnedBlog);
     },
 );
 
