@@ -1,5 +1,16 @@
+import {
+    Anchor,
+    Avatar,
+    Button,
+    Divider,
+    Flex,
+    Space,
+    Stack,
+    Text,
+    Title,
+} from "@mantine/core";
 import { useSelector } from "react-redux";
-import { useMatch } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
 
 const UserView = () => {
     const users = useSelector((state) => state.users);
@@ -8,13 +19,25 @@ const UserView = () => {
     if (!user) return null;
     return (
         <div>
-            <h2>{user.name}</h2>
-            <h3>Added Blogs</h3>
-            <ul>
-                {user.blogs.map((blog) => (
-                    <li key={blog.id}>{blog.title}</li>
-                ))}
-            </ul>
+            <Flex justify="flex-start" align="center" direction="row" gap="sm">
+                <Avatar size="lg" radius="xl" name={user.name}></Avatar>
+                <Title>{user.name}</Title>
+            </Flex>
+            <Space h="lg"></Space>
+            <Divider></Divider>
+            <Space h="lg"></Space>
+            <Title order={3}>{user.name}'s blogs</Title>
+            <Space h="md"></Space>
+            {user.blogs.map((blog) => (
+                <Stack key={blog.id}>
+                    <Space h="sm"></Space>
+                    <Anchor component={Link} to={`/blogs/${blog.id}`}>
+                        {blog.title} by {blog.author}
+                    </Anchor>
+                    <Text size="sm">Likes: {blog.likes}</Text>
+                    <Divider></Divider>
+                </Stack>
+            ))}
         </div>
     );
 };

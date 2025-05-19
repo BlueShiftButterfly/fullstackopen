@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import Notification from "./components/Notification";
 import "./index.css";
 import { useDispatch, useSelector } from "react-redux";
 import { initializeBlogs } from "./reducers/blogReducer";
@@ -12,6 +11,8 @@ import Home from "./components/Home";
 import UserView from "./components/UserView";
 import BlogView from "./components/BlogView";
 import NavigationBar from "./components/NavigationBar";
+import { AppShell, Container } from "@mantine/core";
+import NotificationContainer from "./components/NotificationContainer";
 
 const App = () => {
     const dispatch = useDispatch();
@@ -44,26 +45,38 @@ const App = () => {
     };
 
     return (
-        <div>
-            <Notification></Notification>
-            <NavigationBar></NavigationBar>
-            <Routes>
-                <Route path="/login" element={getLoginNavigation()}></Route>
-                <Route
-                    path="/blogs/:id"
-                    element={requireAuth(<BlogView></BlogView>)}
-                ></Route>
-                <Route
-                    path="/users/:id"
-                    element={requireAuth(<UserView></UserView>)}
-                ></Route>
-                <Route
-                    path="/users"
-                    element={requireAuth(<UserList></UserList>)}
-                ></Route>
-                <Route path="/" element={requireAuth(<Home></Home>)}></Route>
-            </Routes>
-        </div>
+        <AppShell header={{ height: 60, padding: "md" }} padding="md">
+            <AppShell.Header>
+                <NavigationBar></NavigationBar>
+            </AppShell.Header>
+            <AppShell.Main>
+                <Container size="lg">
+                    <NotificationContainer></NotificationContainer>
+                    <Routes>
+                        <Route
+                            path="/login"
+                            element={getLoginNavigation()}
+                        ></Route>
+                        <Route
+                            path="/blogs/:id"
+                            element={requireAuth(<BlogView></BlogView>)}
+                        ></Route>
+                        <Route
+                            path="/users/:id"
+                            element={requireAuth(<UserView></UserView>)}
+                        ></Route>
+                        <Route
+                            path="/users"
+                            element={requireAuth(<UserList></UserList>)}
+                        ></Route>
+                        <Route
+                            path="/"
+                            element={requireAuth(<Home></Home>)}
+                        ></Route>
+                    </Routes>
+                </Container>
+            </AppShell.Main>
+        </AppShell>
     );
 };
 

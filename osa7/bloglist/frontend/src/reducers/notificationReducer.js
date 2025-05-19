@@ -65,4 +65,23 @@ export const notifyError = (errorMessage, secondsToDisplay = 5) => {
     };
 };
 
+export const clearMessage = () => {
+    return async (dispatch) => {
+        dispatch(
+            notificationSlice.actions.clearNotification({
+                type: "MESSAGE",
+            }),
+        );
+    };
+};
+export const clearError = () => {
+    return async (dispatch) => {
+        dispatch(
+            notificationSlice.actions.clearNotification({
+                type: "ERROR",
+            }),
+        );
+    };
+};
+
 export default notificationSlice.reducer;

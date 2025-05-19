@@ -3,7 +3,23 @@ import { useDispatch } from "react-redux";
 import { commentBlog, likeBlog, removeBlog } from "../reducers/blogReducer";
 import loginstorage from "../services/loginstorage";
 import { useField } from "../hooks";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {
+    Anchor,
+    Avatar,
+    Button,
+    Collapse,
+    Divider,
+    Flex,
+    Group,
+    Space,
+    Stack,
+    Text,
+    Textarea,
+    Title,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { useState } from "react";
 
 const Blog = ({ blog }) => {
     const dispatch = useDispatch();
@@ -44,35 +60,57 @@ const Blog = ({ blog }) => {
     };
 
     return (
-        <div className="blog">
-            <h2>
-                {blog.title} -- {blog.author}
-            </h2>
-            <div>
-                <a href={getProperUrL(blog.url)} target="_blank">
-                    {blog.url}
-                </a>
-            </div>
-            <p>
-                Likes: {blog.likes} <button onClick={handleLike}>Like</button>
-            </p>
-            <p>By: {blog.user.name}</p>
-            <button
-                style={{ display: canRemove ? "" : "none" }}
-                onClick={handleRemove}
-            >
-                Remove
-            </button>
-            <h3>Comments</h3>
-            <form onSubmit={handleComment}>
-                <input {...commentContent} id="comment-input" reset="" />
-                <button type="submit">Add Comment</button>
-            </form>
-            <ul>
-                {blog.comments.map((comment) => (
-                    <li key={comment.id}>{comment.content}</li>
-                ))}
-            </ul>
+        <div>
+            <Title>
+                {blog.title} by {blog.author}
+            </Title>
+            <Space h="lg"></Space>
+            <Divider></Divider>
+            <Space h="lg"></Space>
+            <Anchor href={getProperUrL(blog.url)} target="_blank">
+                {blog.url}
+            </Anchor>
+            <Space h="lg"></Space>
+            <Flex gap="lg" align="center">
+                <Text>
+                    Posted by{" "}
+                    <Anchor component={Link} to={`/users/${blog.user.id}`}>
+                        {blog.user.name}
+                    </Anchor>
+                </Text>
+                <Text>Likes: {blog.likes}</Text>
+                <Button onClick={handleLike}>Like</Button>
+            </Flex>
+            <Space h="lg"></Space>
+            <Title order={3}>Comments</Title>
+            <Space h="md"></Space>
+
+            <Flex gap="sm" align="flex-start" direction="column">
+                <Textarea
+                    placeholder="Enter your comment here"
+                    autosize
+                    maxRows={4}
+                    w="600"
+                    {...commentContent}
+                    reset=""
+                ></Textarea>
+                <Button onClick={handleComment}>Comment</Button>
+            </Flex>
+            <Space h="md"></Space>
+
+            <Divider></Divider>
+
+            {blog.comments.toReversed().map((comment) => (
+                <Stack key={comment.id}>
+                    <Space h="xs"></Space>
+                    <Flex gap="sm" align="center">
+                        <Avatar></Avatar>
+                        <Text size="sm">Anonymous Commenter:</Text>
+                    </Flex>
+                    <Text size="lg">{comment.content}</Text>
+                    <Divider></Divider>
+                </Stack>
+            ))}
         </div>
     );
 };

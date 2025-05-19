@@ -1,14 +1,18 @@
 import { useState, useImperativeHandle, forwardRef } from "react";
 import PropTypes from "prop-types";
+import { Button, Modal } from "@mantine/core";
 
 const Togglable = forwardRef((props, ref) => {
     const [visible, setVisible] = useState(false);
 
-    const hideWhenVisible = { display: visible ? "none" : "" };
-    const showWhenVisible = { display: visible ? "" : "none" };
-
     const toggleVisibility = () => {
         setVisible(!visible);
+    };
+    const open = () => {
+        setVisible(true);
+    };
+    const close = () => {
+        setVisible(false);
     };
 
     useImperativeHandle(ref, () => {
@@ -19,13 +23,15 @@ const Togglable = forwardRef((props, ref) => {
 
     return (
         <div>
-            <div style={hideWhenVisible}>
-                <button onClick={toggleVisibility}>{props.buttonLabel}</button>
-            </div>
-            <div style={showWhenVisible}>
-                <button onClick={toggleVisibility}>Cancel</button>
+            <Modal
+                opened={visible}
+                onClose={close}
+                title={props.buttonLabel}
+                size="lg"
+            >
                 {props.children}
-            </div>
+            </Modal>
+            <Button onClick={open}>{props.buttonLabel}</Button>
         </div>
     );
 });

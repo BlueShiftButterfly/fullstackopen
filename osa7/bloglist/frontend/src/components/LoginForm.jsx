@@ -1,6 +1,16 @@
 import { useDispatch } from "react-redux";
 import { useField } from "../hooks";
 import { login } from "../reducers/localUserReducer";
+import {
+    Button,
+    Container,
+    PasswordInput,
+    Space,
+    Stack,
+    TextInput,
+    Title,
+} from "@mantine/core";
+import { getHotkeyHandler } from "@mantine/hooks";
 
 const LoginForm = () => {
     const username = useField("text");
@@ -9,7 +19,7 @@ const LoginForm = () => {
     const dispatch = useDispatch();
 
     const handleLogin = (event) => {
-        event.preventDefault();
+        if (event) event.preventDefault();
         dispatch(login(username.value, password.value));
         username.reset();
         password.reset();
@@ -17,18 +27,28 @@ const LoginForm = () => {
 
     return (
         <div>
-            <h2>Log in to application</h2>
-            <form onSubmit={handleLogin}>
-                <div>
-                    Username
-                    <input {...username} reset="" data-testid="username" />
-                </div>
-                <div>
-                    Password
-                    <input {...password} reset="" data-testid="password" />
-                </div>
-                <button type="submit">Login</button>
-            </form>
+            <Space h="xl"></Space>
+            <Container size="xs">
+                <Stack justify="center" align="stretch">
+                    <Title>Login to application</Title>
+                    <Space></Space>
+                    <TextInput
+                        {...username}
+                        reset=""
+                        placeholder="Enter your username"
+                        label="Username"
+                        onKeyDown={getHotkeyHandler([["Enter", handleLogin]])}
+                    ></TextInput>
+                    <PasswordInput
+                        {...password}
+                        reset=""
+                        placeholder="Enter your password"
+                        label="Password"
+                        onKeyDown={getHotkeyHandler([["Enter", handleLogin]])}
+                    ></PasswordInput>
+                    <Button onClick={handleLogin}>Login</Button>
+                </Stack>
+            </Container>
         </div>
     );
 };
