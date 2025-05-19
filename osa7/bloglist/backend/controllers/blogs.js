@@ -1,13 +1,19 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const middleware = require("../utils/middleware");
+const Comment = require("../models/comment");
 
 blogsRouter.get("", async (request, response) => {
-    const blogs = await Blog.find({}).populate("user", {
-        username: 1,
-        name: 1,
-        id: 1,
-    });
+    const blogs = await Blog.find({})
+        .populate("user", {
+            username: 1,
+            name: 1,
+            id: 1,
+        })
+        .populate("comments", {
+            content: 1,
+            id: 1,
+        });
     response.json(blogs);
 });
 
@@ -26,6 +32,7 @@ blogsRouter.post("", middleware.userExtractor, async (request, response) => {
         blog.likes = 0;
     }
     blog.user = request.user;
+    blog.comments = [];
     const savedBlog = await blog.save();
     request.user.blogs = request.user.blogs.concat(savedBlog.id);
     await request.user.save();
@@ -66,5 +73,29 @@ blogsRouter.put("/:id", async (request, response) => {
         response.status(200).json(blog);
     }
 });
+
+blogsRouter.put(
+    "/:id/comments",
+    middleware.userExtractor,
+    async (request, response) => {
+        console.log(request.body.content);
+        const comment = request.body;
+        const blog = await Blog.findById(request.params.id);
+        if (blog === undefined || blog === null) {
+            return response.status(404).json({ error: "blog not found" });
+        }
+        if (!comment) {
+            return response
+                .status(400)
+                .json({ error: "comment cannot be empty" });
+        }
+        const newComment = new Comment(comment);
+        newComment.blog = blog.id;
+        await newComment.save();
+        blog.comments = blog.comments.concat(newComment.id);
+        await blog.save();
+        return response.status(200).json(blog);
+    },
+);
 
 module.exports = blogsRouter;
