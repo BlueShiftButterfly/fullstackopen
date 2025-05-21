@@ -11,12 +11,12 @@ query {
 `
 const Books = (props) => {
     const result = useQuery(ALL_BOOKS)
-    
+
     if (!props.show) {
         return null
     }
 
-    
+
     if (result.loading) {
         return <div>Loading authors...</div>
     }
