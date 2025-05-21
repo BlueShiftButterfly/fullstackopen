@@ -93,11 +93,9 @@ let books = [
         genres: ["classic", "revolution"]
     },
 ]
-
 /*
   you can remove the placeholder query once your first one has been implemented
 */
-
 const typeDefs = `
 type Book {
     title: String!
@@ -128,6 +126,10 @@ type Mutation {
         published: Int!
         genres: [String!]!
     ): Book
+    editAuthor (
+        name: String!
+        setBornTo: Int!
+    ): Author
 }
 
 `
@@ -167,7 +169,17 @@ const resolvers = {
                 authors = authors.concat({ name: args.author, id: uuid() })
             }
             return book
-        }
+        },
+        editAuthor: (root, args) => {
+            const author = authors.find((author) => author.name === args.name)
+            if (author === undefined){
+                return null
+            }
+            authors.map(
+                (author) => author.name === args.name ? { ...author, born: args.setBornTo } : author
+            )
+            return { ...author, born: args.setBornTo }
+        },
     }
 }
 
