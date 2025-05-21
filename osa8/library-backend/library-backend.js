@@ -171,14 +171,13 @@ const resolvers = {
             return book
         },
         editAuthor: (root, args) => {
-            const author = authors.find((author) => author.name === args.name)
-            if (author === undefined){
+            if (authors.find((author) => author.name === args.name) === undefined){
                 return null
             }
-            authors.map(
+            authors = authors.map(
                 (author) => author.name === args.name ? { ...author, born: args.setBornTo } : author
             )
-            return { ...author, born: args.setBornTo }
+            return authors.find((author) => author.name === args.name)
         },
     }
 }
