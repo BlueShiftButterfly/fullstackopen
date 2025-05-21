@@ -1,8 +1,9 @@
 {
   "name": "library-graphql",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "library-backend.js",
   "scripts": {
+    "start": "node library-backend.js",
     "lint": "eslint ."
   },
   "author": "",
