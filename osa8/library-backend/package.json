@@ -11,7 +11,10 @@
   "description": "",
   "dependencies": {
     "@apollo/server": "^4.12.1",
-    "graphql": "^16.11.0"
+    "dotenv": "^16.5.0",
+    "graphql": "^16.11.0",
+    "mongoose": "^8.15.1",
+    "mongoose-unique-validator": "^4.0.1"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^4.2.0",
