@@ -157,7 +157,15 @@ const resolvers = {
         authorCount: async () => Author.collection.countDocuments(),
         allBooks: async (root, args) => {
             try {
-                const books = await Book.find({})
+                let criteria = {}
+                if (args.author) {
+                    const author = await Author.findOne({ name: args.author })
+                    criteria = { ...criteria, author: author }
+                }
+                if (args.genre) {
+                    criteria = { ...criteria, genres: args.genre }
+                }
+                const books = await Book.find(criteria)
                 return books
             } catch (error) {
                 console.log(error)
@@ -165,8 +173,35 @@ const resolvers = {
         },
         allAuthors: async () => {
             try {
+                const bookCounts = await Book.aggregate([
+                    {
+                        $lookup: {
+                            from: "authors",
+                            localField: "author",
+                            foreignField: "_id",
+                            as: "authorObj"
+                        }
+                    },
+                    {
+                        $unwind: "$authorObj"
+                    },
+                    {
+                        $group: {
+                            _id: "$author",
+                            bookCount: {
+                                $count: {}
+                            },
+                        }
+                    }
+                ])
                 const authors = await Author.find({})
-                return authors
+                const newAuthors = authors.map(author => {
+                    const foundBookCount = bookCounts.filter((bc) => bc._id.toString() === author._id.toString()).length
+                    const newAuthor = author
+                    newAuthor.bookCount = foundBookCount ?? 0
+                    return newAuthor
+                });
+                return newAuthors
             } catch (error) {
                 console.log(error)
             }
@@ -174,30 +209,32 @@ const resolvers = {
     },
     Mutation: {
         addBook: async (root, args) => {
-            const book = new Book({ ...args, author: null })
-            //if (authors.find((author) => author.name === args.author) === undefined) {
-            //    authors = authors.concat({ name: args.author, id: uuid() })
-            //}
-            //const bookAuthor = await Author.find({ name: args.author })
-            //if (!bookAuthor) {
-            //    const newAuthor = new Author({ name: args.author })
-            //    await newAuthor.save()
-            //}
             try {
-                const savedBook = await book.save()
+                let author = await Author.findOne({ name: args.author })
+                if (!author) {
+                    const newAuthor = new Author({ name: args.author, born: null })
+                    author = await newAuthor.save()
+                }
+                const savedBook = await new Book({ ...args, author: author }).save()
                 return savedBook
             } catch (error) {
                 console.log(error)
             }
         },
         editAuthor: async (root, args) => {
-            //if (authors.find((author) => author.name === args.name) === undefined){
-            //    return null
-            //}
-            //authors = authors.map(
-            //    (author) => author.name === args.name ? { ...author, born: args.setBornTo } : author
-            //)
-            //return authors.find((author) => author.name === args.name)
+            try {
+                const author = await Author.findOne({ name: args.name })
+                if (!author)
+                    return null
+
+                author.born = args.setBornTo
+                const savedAuthor = await author.save()
+                const books = await Book.find({ author: author._id })
+                savedAuthor.bookCount = books.length
+                return savedAuthor
+            } catch(error) {
+                console.log(error)
+            }
         },
     }
 }
