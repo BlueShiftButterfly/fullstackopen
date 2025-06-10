@@ -1,6 +1,5 @@
 const { ApolloServer } = require("@apollo/server")
 const { startStandaloneServer } = require("@apollo/server/standalone")
-const { v1: uuid } = require("uuid")
 const mongoose = require("mongoose")
 const Book = require("./models/book")
 const Author = require("./models/author")
@@ -156,19 +155,23 @@ const resolvers = {
         bookCount: async () => Book.collection.countDocuments(),
         authorCount: async () => Author.collection.countDocuments(),
         allBooks: async (root, args) => {
-            try {
-                let criteria = {}
-                if (args.author) {
+            let criteria = {}
+            if (args.author) {
+                try {
                     const author = await Author.findOne({ name: args.author })
                     criteria = { ...criteria, author: author }
+                } catch (error) {
+                    throw new GraphQLError("Error when fetching author.")
                 }
-                if (args.genre) {
-                    criteria = { ...criteria, genres: args.genre }
-                }
-                const books = await Book.find(criteria)
+            }
+            if (args.genre) {
+                criteria = { ...criteria, genres: args.genre }
+            }
+            try {
+                const books = await Book.find(criteria).populate("author")
                 return books
             } catch (error) {
-                console.log(error)
+                throw new GraphQLError("Error finding books.")
             }
         },
         allAuthors: async () => {
@@ -200,7 +203,7 @@ const resolvers = {
                     const newAuthor = author
                     newAuthor.bookCount = foundBookCount ?? 0
                     return newAuthor
-                });
+                })
                 return newAuthors
             } catch (error) {
                 console.log(error)
@@ -209,31 +212,69 @@ const resolvers = {
     },
     Mutation: {
         addBook: async (root, args) => {
-            try {
-                let author = await Author.findOne({ name: args.author })
-                if (!author) {
+            let author = await Author.findOne({ name: args.author })
+            if (!author) {
+                try {
                     const newAuthor = new Author({ name: args.author, born: null })
                     author = await newAuthor.save()
+                } catch (error) {
+                    console.log(error)
+                    if (error.name === "ValidationError") {
+                        throw new GraphQLError("Failed create new author from book.", {
+                            extensions: {
+                                code: "BAD_USER_INPUT",
+                                invalidArgs: args.author,
+                                error
+                            }
+                        })
+                    }
                 }
+
+            }
+            try {
+                const books = await Book.find({ author: author._id }) ?? 0
+                author.bookCount = books.length
                 const savedBook = await new Book({ ...args, author: author }).save()
                 return savedBook
             } catch (error) {
                 console.log(error)
+                if (error.name === "ValidationError") {
+                    throw new GraphQLError("Failed to create book.", {
+                        extensions: {
+                            code: "BAD_USER_INPUT",
+                            error
+                        }
+                    })
+                }
             }
         },
         editAuthor: async (root, args) => {
+            const author = await Author.findOne({ name: args.name })
+            if (!author) {
+                throw new GraphQLError("Author with specified name doesn't exist.", {
+                    extensions: {
+                        code: "BAD_USER_INPUT",
+                        invalidArgs: args.name,
+                        error
+                    }
+                })
+            }
             try {
-                const author = await Author.findOne({ name: args.name })
-                if (!author)
-                    return null
-
                 author.born = args.setBornTo
                 const savedAuthor = await author.save()
-                const books = await Book.find({ author: author._id })
+                const books = await Book.find({ author: author._id }) ?? 0
                 savedAuthor.bookCount = books.length
                 return savedAuthor
             } catch(error) {
                 console.log(error)
+                if (error.name === "ValidationError") {
+                    throw new GraphQLError("Failed edit author.", {
+                        extensions: {
+                            code: "BAD_USER_INPUT",
+                            error
+                        }
+                    })
+                }
             }
         },
     }
