@@ -3,9 +3,16 @@ import { gql, useQuery } from "@apollo/client"
 const ALL_BOOKS = gql`
 query {
     allBooks {
-        title
-        author
+        author {
+            bookCount
+            born
+            id
+            name
+        }
+        genres
+        id
         published
+        title
     }
 }
 `
@@ -22,7 +29,11 @@ const Books = (props) => {
     }
 
 
-    const books = result.data.allBooks
+    const books = result.data ? result.data.allBooks : []
+    
+    if (!result.data) {
+        return <div>Could not load list of book.</div>
+    }
 
     return (
         <div>
@@ -38,7 +49,7 @@ const Books = (props) => {
                     {books.map((a) => (
                         <tr key={a.title}>
                             <td>{a.title}</td>
-                            <td>{a.author}</td>
+                            <td>{a.author.name}</td>
                             <td>{a.published}</td>
                         </tr>
                     ))}

@@ -40,7 +40,11 @@ const Authors = (props) => {
         return <div>Loading authors...</div>
     }
 
-    const authors = result.data.allAuthors
+    const authors = result.data ? result.data.allAuthors : []
+
+    if (!result.data) {
+        return <div>Could not load list of authors.</div>
+    }
 
     const updateBirthyear = (event) => {
         event.preventDefault()
