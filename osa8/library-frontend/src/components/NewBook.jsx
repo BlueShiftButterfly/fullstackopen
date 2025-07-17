@@ -30,9 +30,15 @@ mutation createBook($title: String!, $author: String!, $published: Int! $genres:
         genres: $genres,
     ) {
         title
-        author
         published
         genres
+      author {
+        bookCount
+        born
+        id
+        name
+      }
+      id
     }
 }
 `
@@ -44,7 +50,13 @@ const NewBook = (props) => {
     const [genre, setGenre] = useState("")
     const [genres, setGenres] = useState([])
 
-    const [ createBook ] = useMutation(CREATE_BOOK, { refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS }] })
+    const [ createBook ] = useMutation(CREATE_BOOK, {
+        refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS }],
+        onError: (error) => {
+            console.log(error)
+            console.log(error.graphQLErrors[0].message)
+        }
+    })
 
     if (!props.show) {
         return null
@@ -63,7 +75,7 @@ const NewBook = (props) => {
     }
 
     const addGenre = () => {
-        setGenres(genres.concat(genre))
+        setGenres(genres.concat([genre]))
         setGenre("")
     }
 

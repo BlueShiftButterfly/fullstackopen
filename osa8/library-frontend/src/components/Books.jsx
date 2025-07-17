@@ -30,7 +30,7 @@ const Books = (props) => {
 
 
     const books = result.data ? result.data.allBooks : []
-    
+
     if (!result.data) {
         return <div>Could not load list of book.</div>
     }
