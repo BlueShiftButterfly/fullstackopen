@@ -5,6 +5,7 @@ import NewBook from "./components/NewBook"
 import LoginForm from "./components/LoginForm"
 import { gql, useApolloClient, useMutation } from "@apollo/client"
 import { useEffect } from "react"
+import RecommendedBooks from "./components/RecommendedBooks"
 
 const LOGIN = gql`
 mutation login($username: String!, $password: String!) {
@@ -55,7 +56,6 @@ const App = () => {
 
     const loginUser = (username, password) => {
         login({ variables: { username, password }  })
-
         setPage("authors")
     }
 
@@ -65,6 +65,7 @@ const App = () => {
                 <button onClick={() => setPage("authors")}>authors</button>
                 <button onClick={() => setPage("books")}>books</button>
                 <button onClick={() => setPage("add")} style={showWhenLoggedIn}>add book</button>
+                <button onClick={() => setPage("recommended")} style={showWhenLoggedIn}>recommended</button>
                 <button onClick={() => setPage("login")} style={hideWhenLoggedIn}>login</button>
                 <button onClick={() => logout()} style={showWhenLoggedIn}>logout</button>
             </div>
@@ -76,6 +77,8 @@ const App = () => {
             <NewBook show={page === "add"} />
 
             <LoginForm show={page === "login"} login={loginUser}/>
+
+            <RecommendedBooks show={page === "recommended"} ></RecommendedBooks>
         </div>
     )
 }

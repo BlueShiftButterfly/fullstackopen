@@ -1,9 +1,8 @@
 import { gql, useQuery } from "@apollo/client"
-import { useState } from "react"
 
-const ALL_BOOKS = gql`
-query {
-    allBooks {
+const ALL_BOOKS_OF_GENRE = gql`
+query AllBooks($genre: String) {
+    allBooks(genre: $genre) {
         author {
             bookCount
             born
@@ -17,9 +16,22 @@ query {
     }
 }
 `
-const Books = (props) => {
-    const result = useQuery(ALL_BOOKS)
-    const [genreFilter, setGenreFilter] = useState("")
+
+const FAVORITE_GENRE = gql`
+query Query {
+  me {
+    favoriteGenre
+  }
+}
+`
+
+const RecommendedBooks = (props) => {
+    const { data: favoriteGenre } = useQuery(FAVORITE_GENRE)
+    
+    const result = useQuery(ALL_BOOKS_OF_GENRE, {
+        skip: !favoriteGenre || !favoriteGenre.me,
+        variables: { genre: favoriteGenre ? favoriteGenre.me.favoriteGenre : "" },
+    })
 
     if (!props.show) {
         return null
@@ -32,23 +44,15 @@ const Books = (props) => {
     const books = result.data ? result.data.allBooks : []
 
     if (!result.data) {
+        console.log(result)
         return <div>Could not load list of book.</div>
     }
 
-    const getGenres = () => {
-        let genresArr = []
-        books.forEach(book => {
-            genresArr = genresArr.concat(book.genres)
-        });
-        return [... new Set(genresArr)]
-    }
-
-    const genres = getGenres()
 
     return (
         <div>
-            <h2>books</h2>
-            <p>{genreFilter === "" ? " " : "in genre: "}<b>{genreFilter}</b></p>
+            <h2>recommendations</h2>
+            <p>books in your favorite genre <b>{favoriteGenre ? favoriteGenre.me.favoriteGenre : ""}</b></p>
             <table>
                 <tbody>
                     <tr>
@@ -57,10 +61,6 @@ const Books = (props) => {
                         <th>published</th>
                     </tr>
                     {books
-                        .filter((b) => {
-                            if (genreFilter === "") return true
-                            return (b.genres.includes(genreFilter)) 
-                        })
                         .map((a) => (
                             <tr key={a.title}>
                                 <td>{a.title}</td>
@@ -70,14 +70,8 @@ const Books = (props) => {
                     ))}
                 </tbody>
             </table>
-            <div>
-                {genres.map((a) => (
-                    <button key={a} onClick={() => setGenreFilter(a)}>{a}</button>
-                ))}
-                <button onClick={() => setGenreFilter("")}>all genres</button>
-            </div>
         </div>
     )
 }
 
-export default Books
+export default RecommendedBooks
