@@ -1,9 +1,9 @@
 import { gql, useQuery } from "@apollo/client"
 import { useState } from "react"
 
-const ALL_BOOKS = gql`
-query {
-    allBooks {
+const BOOKS_BY_GENRE = gql`
+query AllBooks($genre: String) {
+    allBooks(genre: $genre) {
         author {
             bookCount
             born
@@ -17,28 +17,42 @@ query {
     }
 }
 `
+
+const LIST_GENRES = gql`
+query AllBooks {
+    allBooks {
+        genres
+    }
+}
+`
+
 const Books = (props) => {
-    const result = useQuery(ALL_BOOKS)
     const [genreFilter, setGenreFilter] = useState("")
+    
+    const genres_result = useQuery(LIST_GENRES)
+    
+    const books_result = useQuery(BOOKS_BY_GENRE, {
+        variables: { genre: (genreFilter === "") ? null : genreFilter}
+    })
 
     if (!props.show) {
         return null
     }
 
-    if (result.loading) {
+    if (books_result.loading || genres_result.loading) {
         return <div>Loading books...</div>
     }
 
-    const books = result.data ? result.data.allBooks : []
+    const books = books_result.data ? books_result.data.allBooks : []
 
-    if (!result.data) {
+    if (!books_result.data) {
         return <div>Could not load list of book.</div>
     }
 
     const getGenres = () => {
         let genresArr = []
-        books.forEach(book => {
-            genresArr = genresArr.concat(book.genres)
+        genres_result.data.allBooks.forEach(g => {
+            genresArr = genresArr.concat(g.genres)
         });
         return [... new Set(genresArr)]
     }
@@ -57,10 +71,6 @@ const Books = (props) => {
                         <th>published</th>
                     </tr>
                     {books
-                        .filter((b) => {
-                            if (genreFilter === "") return true
-                            return (b.genres.includes(genreFilter)) 
-                        })
                         .map((a) => (
                             <tr key={a.title}>
                                 <td>{a.title}</td>

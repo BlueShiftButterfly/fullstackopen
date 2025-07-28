@@ -1,6 +1,23 @@
 import { gql, useMutation } from "@apollo/client"
 import { useState } from "react"
 
+const BOOKS_BY_GENRE = gql`
+query AllBooks($genre: String) {
+    allBooks(genre: $genre) {
+        author {
+            bookCount
+            born
+            id
+            name
+        }
+        genres
+        id
+        published
+        title
+    }
+}
+`
+
 const ALL_BOOKS = gql`
 query {
     allBooks {
@@ -54,8 +71,27 @@ const NewBook = (props) => {
         refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS }],
         onError: (error) => {
             console.log(error)
-            console.log(error.graphQLErrors[0].message)
-        }
+            //console.log(error.graphQLErrors[0].message)
+        },
+        /*update: (cache, response) => {
+            console.log(response.data)
+            cache.updateQuery({query: BOOKS_BY_GENRE}, ({ allBooks }) => {
+                return {
+                    allBooks: allBooks.concat(response.data.addBook)
+                }
+            })
+            cache.updateQuery({query: ALL_AUTHORS}, ({ allAuthors }) => {
+                return {
+                    allAuthors: allAuthors.concat({
+                        name: response.data.addBook.author.name,
+                        born: response.data.addBook.author.born,
+                        bookCount: response.data.addBook.author.bookCount,
+                    })
+                }
+            })
+            console.log("updateing cache")
+            */
+        //},
     })
 
     if (!props.show) {
