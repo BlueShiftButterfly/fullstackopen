@@ -68,18 +68,22 @@ const NewBook = (props) => {
     const [genres, setGenres] = useState([])
 
     const [ createBook ] = useMutation(CREATE_BOOK, {
-        refetchQueries: [ { query: ALL_BOOKS }, { query: ALL_AUTHORS }],
-        onError: (error) => {
-            console.log(error)
+        refetchQueries: [{ query: BOOKS_BY_GENRE, variables: { genre: null } }, { query: ALL_AUTHORS }],
+        
+        //onError: (error) => {
+        //    console.log(error)
             //console.log(error.graphQLErrors[0].message)
-        },
-        /*update: (cache, response) => {
-            console.log(response.data)
-            cache.updateQuery({query: BOOKS_BY_GENRE}, ({ allBooks }) => {
+        //},
+        //update: (cache, response) => {
+        //   console.log(response.data)
+            /*cache.updateQuery({query: BOOKS_BY_GENRE}, (data) => {
+                console.log(response.data.addBook)
+                console.log(data)
                 return {
-                    allBooks: allBooks.concat(response.data.addBook)
+                   allBooks: data.allBooks.concat(response.data.addBook)
                 }
             })
+            /*
             cache.updateQuery({query: ALL_AUTHORS}, ({ allAuthors }) => {
                 return {
                     allAuthors: allAuthors.concat({
@@ -89,7 +93,7 @@ const NewBook = (props) => {
                     })
                 }
             })
-            console.log("updateing cache")
+            //console.log("updateing cache")
             */
         //},
     })

@@ -216,15 +216,15 @@ const resolvers = {
                             _id: "$author",
                             bookCount: {
                                 $count: {}
-                            },
+                            }
                         }
                     }
                 ])
                 const authors = await Author.find({})
                 const newAuthors = authors.map(author => {
-                    const foundBookCount = bookCounts.filter((bc) => bc._id.toString() === author._id.toString()).length
+                    const foundBookCount = bookCounts.filter((bc) => bc._id.toString() === author._id.toString())[0]
                     const newAuthor = author
-                    newAuthor.bookCount = foundBookCount ?? 0
+                    newAuthor.bookCount = foundBookCount.bookCount ?? 0
                     return newAuthor
                 })
                 return newAuthors
