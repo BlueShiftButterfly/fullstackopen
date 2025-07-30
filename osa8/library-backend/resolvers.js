@@ -60,6 +60,7 @@ const resolvers = {
                 const authors = await Author.find({})
                 const newAuthors = authors.map(author => {
                     const foundBookCount = bookCounts.filter((bc) => bc._id.toString() === author._id.toString())[0]
+                    if (!foundBookCount) return author
                     const newAuthor = author
                     newAuthor.bookCount = foundBookCount.bookCount ?? 0
                     return newAuthor

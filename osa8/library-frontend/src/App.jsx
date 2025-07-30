@@ -3,17 +3,10 @@ import Authors from "./components/Authors"
 import Books from "./components/Books"
 import NewBook from "./components/NewBook"
 import LoginForm from "./components/LoginForm"
-import { gql, useApolloClient, useMutation } from "@apollo/client"
+import { useApolloClient, useMutation, useSubscription } from "@apollo/client"
 import { useEffect } from "react"
 import RecommendedBooks from "./components/RecommendedBooks"
-
-const LOGIN = gql`
-mutation login($username: String!, $password: String!) {
-    login(username: $username, password: $password)  {
-        value
-    }
-}
-`
+import { BOOK_ADDED, LOGIN } from "./queries"
 
 
 const App = () => {
@@ -42,6 +35,13 @@ const App = () => {
             setToken(userToken)
         }
     }, [])
+
+    useSubscription(BOOK_ADDED, {
+        onData: ({ data }) => {
+            console.log(data.data)
+            window.alert(`Added book ${data.data.bookAdded.title} by ${data.data.bookAdded.author.name}`);
+        }
+    })
 
 
     const hideWhenLoggedIn = { display: (token === null) ? "" : "none" }

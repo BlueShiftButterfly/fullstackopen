@@ -1,34 +1,10 @@
-import { gql, useQuery } from "@apollo/client"
-
-const ALL_BOOKS_OF_GENRE = gql`
-query AllBooks($genre: String) {
-    allBooks(genre: $genre) {
-        author {
-            bookCount
-            born
-            id
-            name
-        }
-        genres
-        id
-        published
-        title
-    }
-}
-`
-
-const FAVORITE_GENRE = gql`
-query Query {
-  me {
-    favoriteGenre
-  }
-}
-`
+import { useQuery } from "@apollo/client"
+import { BOOKS_BY_GENRE, FAVORITE_GENRE } from "../queries"
 
 const RecommendedBooks = (props) => {
     const { data: favoriteGenre } = useQuery(FAVORITE_GENRE)
-    
-    const result = useQuery(ALL_BOOKS_OF_GENRE, {
+
+    const result = useQuery(BOOKS_BY_GENRE, {
         skip: !favoriteGenre || !favoriteGenre.me,
         variables: { genre: favoriteGenre ? favoriteGenre.me.favoriteGenre : "" },
     })
@@ -67,7 +43,7 @@ const RecommendedBooks = (props) => {
                                 <td>{a.author.name}</td>
                                 <td>{a.published}</td>
                             </tr>
-                    ))}
+                        ))}
                 </tbody>
             </table>
         </div>

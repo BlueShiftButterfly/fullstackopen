@@ -1,38 +1,14 @@
-import { gql, useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client"
 import { useState } from "react"
-
-const BOOKS_BY_GENRE = gql`
-query AllBooks($genre: String) {
-    allBooks(genre: $genre) {
-        author {
-            bookCount
-            born
-            id
-            name
-        }
-        genres
-        id
-        published
-        title
-    }
-}
-`
-
-const LIST_GENRES = gql`
-query AllBooks {
-    allBooks {
-        genres
-    }
-}
-`
+import { BOOKS_BY_GENRE, LIST_GENRES } from "../queries"
 
 const Books = (props) => {
     const [genreFilter, setGenreFilter] = useState("")
-    
+
     const genres_result = useQuery(LIST_GENRES)
-    
+
     const books_result = useQuery(BOOKS_BY_GENRE, {
-        variables: { genre: (genreFilter === "") ? null : genreFilter}
+        variables: { genre: (genreFilter === "") ? null : genreFilter }
     })
 
     if (!props.show) {
@@ -53,7 +29,7 @@ const Books = (props) => {
         let genresArr = []
         genres_result.data.allBooks.forEach(g => {
             genresArr = genresArr.concat(g.genres)
-        });
+        })
         return [... new Set(genresArr)]
     }
 
@@ -77,7 +53,7 @@ const Books = (props) => {
                                 <td>{a.author.name}</td>
                                 <td>{a.published}</td>
                             </tr>
-                    ))}
+                        ))}
                 </tbody>
             </table>
             <div>

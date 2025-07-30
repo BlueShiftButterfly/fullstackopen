@@ -1,27 +1,6 @@
-import { gql, useMutation, useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client"
 import { useState } from "react"
-
-const ALL_AUTHORS = gql`
-query {
-    allAuthors {
-        name
-        born
-        bookCount
-    }
-}
-`
-
-const EDIT_AUTHOR = gql`
-mutation ($name: String! $setBornTo: Int!){
-    editAuthor(
-        name: $name,
-        setBornTo: $setBornTo
-    ) {
-        name
-        born
-  }
-}
-`
+import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries"
 
 const Authors = (props) => {
     const [ authorName, setAuthorName ] = useState("")
@@ -41,6 +20,8 @@ const Authors = (props) => {
     }
 
     const authors = result.data ? result.data.allAuthors : []
+    //console.log(authors)
+    //console.log(result)
 
     if (!result.data) {
         return <div>Could not load list of authors.</div>

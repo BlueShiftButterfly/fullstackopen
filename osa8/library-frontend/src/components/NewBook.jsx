@@ -1,64 +1,6 @@
-import { gql, useMutation } from "@apollo/client"
+import { useMutation } from "@apollo/client"
 import { useState } from "react"
-
-const BOOKS_BY_GENRE = gql`
-query AllBooks($genre: String) {
-    allBooks(genre: $genre) {
-        author {
-            bookCount
-            born
-            id
-            name
-        }
-        genres
-        id
-        published
-        title
-    }
-}
-`
-
-const ALL_BOOKS = gql`
-query {
-    allBooks {
-        title
-        author
-        published
-    }
-}
-`
-
-const ALL_AUTHORS = gql`
-query {
-    allAuthors {
-        name
-        born
-        bookCount
-    }
-}
-`
-
-const CREATE_BOOK = gql`
-mutation createBook($title: String!, $author: String!, $published: Int! $genres: [String!]!) {
-    addBook(
-        title: $title,
-        author: $author,
-        published: $published,
-        genres: $genres,
-    ) {
-        title
-        published
-        genres
-      author {
-        bookCount
-        born
-        id
-        name
-      }
-      id
-    }
-}
-`
+import { ALL_AUTHORS, BOOKS_BY_GENRE, CREATE_BOOK } from "../queries"
 
 const NewBook = (props) => {
     const [title, setTitle] = useState("")
@@ -68,34 +10,7 @@ const NewBook = (props) => {
     const [genres, setGenres] = useState([])
 
     const [ createBook ] = useMutation(CREATE_BOOK, {
-        refetchQueries: [{ query: BOOKS_BY_GENRE, variables: { genre: null } }, { query: ALL_AUTHORS }],
-        
-        //onError: (error) => {
-        //    console.log(error)
-            //console.log(error.graphQLErrors[0].message)
-        //},
-        //update: (cache, response) => {
-        //   console.log(response.data)
-            /*cache.updateQuery({query: BOOKS_BY_GENRE}, (data) => {
-                console.log(response.data.addBook)
-                console.log(data)
-                return {
-                   allBooks: data.allBooks.concat(response.data.addBook)
-                }
-            })
-            /*
-            cache.updateQuery({query: ALL_AUTHORS}, ({ allAuthors }) => {
-                return {
-                    allAuthors: allAuthors.concat({
-                        name: response.data.addBook.author.name,
-                        born: response.data.addBook.author.born,
-                        bookCount: response.data.addBook.author.bookCount,
-                    })
-                }
-            })
-            //console.log("updateing cache")
-            */
-        //},
+        refetchQueries: [{ query: ALL_AUTHORS }, { query: BOOKS_BY_GENRE, variables: { genre: null } }],
     })
 
     if (!props.show) {
@@ -115,6 +30,7 @@ const NewBook = (props) => {
     }
 
     const addGenre = () => {
+        if (genre.trim() == "") return; // fix empty genres
         setGenres(genres.concat([genre]))
         setGenre("")
     }
