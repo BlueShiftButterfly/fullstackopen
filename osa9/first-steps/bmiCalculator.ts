@@ -14,15 +14,14 @@ const ranges: Array<[number, number, string]> = [
 
 export const calculateBmi = (height: number, weight: number): string => {
     const bmi: number = weight / Math.pow((height / 100), 2);
-    let result: string = "error";
     for (let i: number = 0; i < ranges.length; i++) {
         const r: [number, number, string] = ranges[i];
         if (r[0] < bmi && bmi <= r[1]) {
             return r[2];
         }
     }
-    return result;
-}
+    return "error";
+};
 
 if (require.main === module) {
     try {

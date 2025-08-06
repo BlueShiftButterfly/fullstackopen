@@ -30,15 +30,15 @@ const getRating = (ratings: Array<[number, number]>, goal: number, average: numb
         }
     }
     return 1;
-}
+};
 
 const calculateExcercises = (excerciseHours: number[], targetAmount: number): ExcerciseResult => {
     const totalExcercise: number = excerciseHours.reduce(
         (a, c): number => a + c
-    )
+    );
     const trainingDays: number = excerciseHours.reduce(
         (a, c): number => { if (c > 0) return a + 1; return a; }
-    )
+    );
     const average: number = totalExcercise / excerciseHours.length;
     const success: boolean = average >= targetAmount;
     const rating: number = getRating(ratingRangesPercent, targetAmount, average);
@@ -52,9 +52,9 @@ const calculateExcercises = (excerciseHours: number[], targetAmount: number): Ex
         ratingDescription,
         target: targetAmount,
         average
-    }
+    };
     return result;
-}
+};
 
 try {
     const nArgs: number[] = parseArguments(process.argv, 2, 10000000);
