@@ -1,3 +1,5 @@
+import { parseArguments } from "./parser";
+
 // From https://en.wikipedia.org/wiki/Body_mass_index#Categories
 const ranges: Array<[number, number, string]> = [
     [-Infinity, 16, "Underweight (Severe thinness)"],
@@ -22,4 +24,13 @@ const calculateBmi = (height: number, weight: number): string => {
     return result;
 }
 
-console.log(calculateBmi(180, 74));
+try {
+    const nArgs: number[] = parseArguments(process.argv, 4, 4);
+    console.log(calculateBmi(nArgs[0], nArgs[1]));
+} catch(error: unknown) {
+    if (error instanceof Error) {
+        console.log("Error: " + error.message);
+    } else {
+        console.log("An unknown error occured");
+    }
+}

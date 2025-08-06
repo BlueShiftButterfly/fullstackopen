@@ -1,3 +1,5 @@
+import { parseArguments } from "./parser";
+
 interface ExcerciseResult {
     periodLength: number,
     trainingDays: number,
@@ -9,8 +11,8 @@ interface ExcerciseResult {
 }
 
 const ratingRangesPercent: Array<[number, number]> = [
-    [0, 0.5],
-    [0.5, 1.0],
+    [0, 0.6],
+    [0.6, 1.0],
     [1.0, 10000]
 ];
 
@@ -23,7 +25,7 @@ const ratingDescriptions: { [id: number] : string} = {
 const getRating = (ratings: Array<[number, number]>, goal: number, average: number): number => {
     for (let i: number = 0; i < ratings.length; i++) {
         const range = ratings[i];
-        if (range[0] * goal < average && average <= range[1] * goal) {
+        if (range[0] * goal <= average && average < range[1] * goal) {
             return i+1;
         }
     }
@@ -35,7 +37,7 @@ const calculateExcercises = (excerciseHours: number[], targetAmount: number): Ex
         (a, c): number => a + c
     )
     const trainingDays: number = excerciseHours.reduce(
-        (a, c): number => c > 0 ? a : a + 1
+        (a, c): number => { if (c > 0) return a + 1; return a; }
     )
     const average: number = totalExcercise / excerciseHours.length;
     const success: boolean = average >= targetAmount;
@@ -54,4 +56,13 @@ const calculateExcercises = (excerciseHours: number[], targetAmount: number): Ex
     return result;
 }
 
-console.log(calculateExcercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+try {
+    const nArgs: number[] = parseArguments(process.argv, 2, 10000000);
+    console.log(calculateExcercises(nArgs.slice(1), nArgs[0]));
+} catch(error: unknown) {
+    if (error instanceof Error) {
+        console.log("Error: " + error.message);
+    } else {
+        console.log("An unknown error occured");
+    }
+}
