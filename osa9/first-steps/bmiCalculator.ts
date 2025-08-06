@@ -12,7 +12,7 @@ const ranges: Array<[number, number, string]> = [
     [40, Infinity, "Obese (Class III)"],
 ];
 
-const calculateBmi = (height: number, weight: number): string => {
+export const calculateBmi = (height: number, weight: number): string => {
     const bmi: number = weight / Math.pow((height / 100), 2);
     let result: string = "error";
     for (let i: number = 0; i < ranges.length; i++) {
@@ -24,13 +24,15 @@ const calculateBmi = (height: number, weight: number): string => {
     return result;
 }
 
-try {
-    const nArgs: number[] = parseArguments(process.argv, 4, 4);
-    console.log(calculateBmi(nArgs[0], nArgs[1]));
-} catch(error: unknown) {
-    if (error instanceof Error) {
-        console.log("Error: " + error.message);
-    } else {
-        console.log("An unknown error occured");
+if (require.main === module) {
+    try {
+        const nArgs: number[] = parseArguments(process.argv, 4, 4);
+        console.log(calculateBmi(nArgs[0], nArgs[1]));
+    } catch(error: unknown) {
+        if (error instanceof Error) {
+            console.log("Error: " + error.message);
+        } else {
+            console.log("An unknown error occured");
+        }
     }
 }
