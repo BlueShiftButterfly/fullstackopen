@@ -1,6 +1,6 @@
 import { parseArguments } from "./parser";
 
-interface ExcerciseResult {
+export interface ExcerciseResult {
     periodLength: number,
     trainingDays: number,
     success: boolean,
@@ -32,7 +32,7 @@ const getRating = (ratings: Array<[number, number]>, goal: number, average: numb
     return 1;
 };
 
-const calculateExcercises = (excerciseHours: number[], targetAmount: number): ExcerciseResult => {
+export const calculateExcercises = (excerciseHours: number[], targetAmount: number): ExcerciseResult => {
     const totalExcercise: number = excerciseHours.reduce(
         (a, c): number => a + c
     );
@@ -56,13 +56,15 @@ const calculateExcercises = (excerciseHours: number[], targetAmount: number): Ex
     return result;
 };
 
-try {
-    const nArgs: number[] = parseArguments(process.argv, 2, 10000000);
-    console.log(calculateExcercises(nArgs.slice(1), nArgs[0]));
-} catch(error: unknown) {
-    if (error instanceof Error) {
-        console.log("Error: " + error.message);
-    } else {
-        console.log("An unknown error occured");
+if (require.main === module) {
+    try {
+        const nArgs: number[] = parseArguments(process.argv, 2, 10000000);
+        console.log(calculateExcercises(nArgs.slice(1), nArgs[0]));
+    } catch(error: unknown) {
+        if (error instanceof Error) {
+            console.log("Error: " + error.message);
+        } else {
+            console.log("An unknown error occured");
+        }
     }
 }

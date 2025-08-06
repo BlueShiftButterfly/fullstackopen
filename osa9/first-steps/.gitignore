@@ -64,3 +64,5 @@ package-lock.json
 .eslintcache
 *v8.log
 /lib/
+# Ignore all .rest from the VSC REST Client plugin
+*.rest
