@@ -2,8 +2,8 @@ import express from "express";
 import diagnosisRouter from "./routes/diagnoses";
 import patientsRouter from "./routes/patients";
 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-require-imports */
 const cors = require("cors");
-
 
 const app = express();
 const PORT = 3001;
@@ -14,7 +14,8 @@ const corsOptions = {
     origin: [`http://localhost:${FRONTEND_PORT}`], 
     credentials:true,
     optionSuccessStatus:200
-}
+};
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 app.use(cors(corsOptions));
 
 
