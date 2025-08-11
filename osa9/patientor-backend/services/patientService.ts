@@ -1,10 +1,9 @@
 import data from "../data/patients";
-import { NewPatient, Patient } from "../types/patient";
+import { NewPatient, NewPatientSchema, Patient } from "../types/patient";
 import { v4 as uuid } from "uuid";
-import toNewPatient from "../types/toNewPatient";
 
 const db: Patient[] = data.map(obj => {
-    const o = toNewPatient(obj) as Patient;
+    const o = NewPatientSchema.parse(obj) as Patient;
     o.id = obj.id;
     return o;
 });
