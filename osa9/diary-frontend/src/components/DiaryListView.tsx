@@ -8,6 +8,7 @@ interface DiaryListViewProps {
 export const DiaryListView = (props: DiaryListViewProps) => {
     return (
         <div>
+            <h2>Diary Entries</h2>
             {props.diaries.map(d => <DiaryEntryView diary={d} key={d.id}></DiaryEntryView>)}
         </div>
     );
