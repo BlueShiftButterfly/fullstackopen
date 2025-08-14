@@ -1,11 +1,14 @@
 import type { NewDiaryEntry } from "../types/newDiaryEntry";
-import { Visibility } from "../types/visibility";
-import { Weather } from "../types/weather";
+import { diaryParser, parseVisibility, parseWeather } from "../utils/diaryParser";
 import { useField } from "../utils/useField";
 
 interface NewDiaryFormProps {
     handleCreateNewDiary: (object: NewDiaryEntry) => void
+    flashErrorMessage: (object: string) => void
 }
+
+// Wether the frontend tries to first handle errors before the server or not
+const HANDLE_PARSE_ERRORS = false;
 
 export const NewDiaryForm = (props: NewDiaryFormProps) => {
     const date = useField("text");
@@ -13,53 +16,43 @@ export const NewDiaryForm = (props: NewDiaryFormProps) => {
     const weather = useField("text");
     const comment = useField("text");
 
-    const parseWeather = (object: string) => {
-        switch (object.toLowerCase()) {
-            case "sunny":
-                return Weather.Sunny;
-            case "rainy":
-                return Weather.Rainy;
-            case "cloudy":
-                return Weather.Cloudy;
-            case "stormy":
-                return Weather.Stormy;
-            case "windy":
-                return Weather.Windy;
-            default:
-                return Weather.Sunny;
-        }
-    };
-
-    const parseVisibility = (object: string) => {
-        switch (object.toLowerCase()) {
-            case "good":
-                return Visibility.Good;
-            case "great":
-                return Visibility.Great;
-            case "ok":
-                return Visibility.Ok;
-            case "poor":
-                return Visibility.Poor;
-            default:
-                return Visibility.Great;
-        }
-    };
-
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const newDiary = 
-        {
-            date: date.value,
-            comment: comment.value,
-            weather: parseWeather(weather.value),
-            visibility: parseVisibility(visibility.value)
-        };
-        props.handleCreateNewDiary(newDiary);
-        date.reset();
-        visibility.reset();
-        weather.reset();
-        comment.reset();
+        if (HANDLE_PARSE_ERRORS) tryCreateDiary();
+        else {
+            const newDiary: NewDiaryEntry = {
+                date: date.value,
+                visibility: parseVisibility(visibility.value, false),
+                weather: parseWeather(weather.value, false),
+                comment: comment.value
+            };
+            props.handleCreateNewDiary(newDiary);
+            date.reset();
+            visibility.reset();
+            weather.reset();
+            comment.reset();
+        }
     };
+
+    const tryCreateDiary = () => {
+        try {
+            const newDiary = diaryParser({
+                date: date.value,
+                visibility: visibility.value,
+                weather: weather.value,
+                comment: comment.value
+            });
+            props.handleCreateNewDiary(newDiary);
+            date.reset();
+            visibility.reset();
+            weather.reset();
+            comment.reset();
+        } catch(error: unknown) {
+            const e = error as Error;
+            console.log(error);
+            if (e.message) props.flashErrorMessage(e.message);
+        }
+    }
 
     const handleReset = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

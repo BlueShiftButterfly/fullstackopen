@@ -9,7 +9,7 @@ export const getAllDiaries = () => {
         .get<DiaryEntry[]>(URL)
         .then(r => {
             return r.data;
-        });
+        })
 };
 
 export const createDiaryEntry = (object: NewDiaryEntry) => {
@@ -17,5 +17,5 @@ export const createDiaryEntry = (object: NewDiaryEntry) => {
         .post<DiaryEntry>(URL, object)
         .then(r => {
             return r.data;
-        });
+        })
 };
